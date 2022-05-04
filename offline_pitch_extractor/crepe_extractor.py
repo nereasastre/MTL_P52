@@ -4,8 +4,6 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-# notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
-
 
 def crepe_pitch(audio, sr):
     """
@@ -23,21 +21,43 @@ def crepe_pitch(audio, sr):
     idxs = []
 
     for idx in range(len(frequency) - 1):
+        if confidence[idx] > 0.8:
+            if not idxs:
+                idxs.append(idx) # append first decent guess
         if abs(frequency[idx] - frequency[idx + 1]) > 3:
-            idxs.append(idx - 1)
+            if idx !=0:
+                idxs.append(idx)
 
-    print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
+    print("Detected frequency: ", frequency[idxs][0].round())
 
-    print(len(time), len(frequency), len(confidence), len(activation))
+    #print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
+    #print("time: ", time, "frequency: ", frequency, "confidence: ", confidence)
+    #print(len(audio), "\n", len(time), "\n",  len(frequency), "\n",len(confidence),  "\n", len(activation))
     return time, frequency, confidence, activation
 
 
 def test_crepe_extractor():
-    #todo move to test folder once we start testing
-    """Tests crepe extractor against the piano.wav file"""
+    # todo move to test folder once we start testing
 
-    sr, audio = wavfile.read("../sounds/piano.wav")
+    """
+    Tests crepe extractor against the piano.wav file
+    Expected results: notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
+    """
+
+    sr, audio = wavfile.read("../sounds/sine-101.wav")
     crepe_pitch(audio, sr)
 
 
-test_crepe_extractor()
+def test_crepe_extractor_sin_101():
+    # todo move to test folder once we start testing
+
+    """
+    Tests crepe extractor against the piano.wav file
+    Expected results: notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
+    """
+
+    sr, audio = wavfile.read("../sounds/sine-101.wav")
+    crepe_pitch(audio, sr)
+
+
+test_crepe_extractor_sin_101()
