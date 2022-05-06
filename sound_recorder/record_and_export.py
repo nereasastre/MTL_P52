@@ -14,4 +14,4 @@ def record_and_export(fs=44100):
     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     print("Starting your recording...")
     sd.wait()  # Wait until recording is finished
-    write('output.wav', fs, myrecording)  # Save as WAV file
+    write('sound_recorder/output.wav', fs, myrecording)  # Save as WAV file
