@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="{% static 'img/logo/favicon.ico' %}"/>
+
+    <title>{% translate "Pitch Monitor" %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {},
+                    fontFamily: {
+                        'source-sans-pro': ['Source Sans Pro'],
+                        'mitr': ['Mitr'],
+                        'roboto-slab': ['Roboto Slab'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+{% include 'navbar.html' %}
+<div>
+    {% block content %}
+    {% endblock content %}
+</div>
+</body>
+</html>
