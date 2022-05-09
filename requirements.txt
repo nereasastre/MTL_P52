@@ -1,3 +1,10 @@
+asgiref==3.4.1
+Django==3.2.13
+pymysql==1.0.2
+django-environ==0.6.0
+pytz==2021.1
+sqlparse==0.4.2
+sphinx==4.5.0
 absl-py==1.0.0
 asttokens==2.0.5
 astunparse==1.6.3
