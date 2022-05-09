@@ -14,12 +14,14 @@ def zero_crossing_extractor(audio, fs=44100, silence_thr=0):
 
     # compute number of crossings
     for i in range(num_samples - 1):
-        if (audio[i] > silence_thr >= audio[i + 1]) or (audio[i] < silence_thr <= audio[i + 1]):
+        if (audio[i] > silence_thr >= audio[i + 1]) or (
+            audio[i] < silence_thr <= audio[i + 1]
+        ):
             num_crossing += 1
 
-    total_seconds = num_samples/fs
-    num_cycles = num_crossing/2
-    frequency = num_cycles/total_seconds
+    total_seconds = num_samples / fs
+    num_cycles = num_crossing / 2
+    frequency = num_cycles / total_seconds
 
     return frequency
 

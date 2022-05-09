@@ -2,7 +2,7 @@ from scipy.io import wavfile
 
 import os, sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../"))
 
 from offline_pitch_extractor import crepe_extractor as ce
 from sound_recorder import record_and_export as rae
