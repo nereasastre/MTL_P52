@@ -31,7 +31,7 @@ def crepe_pitch(audio, sr):
     # print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
     # print("time: ", time, "frequency: ", frequency, "confidence: ", confidence)
     # print(len(audio), "\n", len(time), "\n",  len(frequency), "\n",len(confidence),  "\n", len(activation))
-    #return time, frequency, confidence, activation
+    # return time, frequency, confidence, activation
     freq = frequency[idxs][0].round()
     return freq
 

@@ -25,6 +25,7 @@ def zero_crossing_extractor(audio, sr=44100, silence_thr=0):
 
     return frequency
 
+
 """
 # INFORMAL TEST todo move to tests
 sr, audio = wavfile.read("../sounds/sine-101.wav")

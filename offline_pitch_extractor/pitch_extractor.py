@@ -3,7 +3,8 @@ import os, sys
 import crepe_extractor as ce
 import fft_extractor as ffte
 import zero_cros_extractor as zce
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../'))
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../"))
 import sound_recorder.record_and_export as rae
 
 """
