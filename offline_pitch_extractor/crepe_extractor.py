@@ -28,12 +28,12 @@ def crepe_pitch(audio, sr):
             if idx != 0:
                 idxs.append(idx)
 
-    print("Detected frequency: ", frequency[idxs][0].round())
-
     # print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
     # print("time: ", time, "frequency: ", frequency, "confidence: ", confidence)
     # print(len(audio), "\n", len(time), "\n",  len(frequency), "\n",len(confidence),  "\n", len(activation))
-    return time, frequency, confidence, activation
+    #return time, frequency, confidence, activation
+    freq = frequency[idxs][0].round()
+    return freq
 
 
 def test_crepe_extractor():
@@ -60,4 +60,4 @@ def test_crepe_extractor_sin_101():
     crepe_pitch(audio, sr)
 
 
-test_crepe_extractor_sin_101()
+# test_crepe_extractor_sin_101()
