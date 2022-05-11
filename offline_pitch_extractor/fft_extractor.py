@@ -27,17 +27,19 @@ def fft_pitch(path):
     print('Pitch detected: ', pitch)
 
     # plotting
-    '''
+
     fig, ax = plt.subplots()
     plt.plot(f[0:2000], Pxx[0:2000], linewidth=2)
     plt.ylabel('Amplitude')
     plt.xlabel('Frequency [Hz]')
     plt.show()
-    '''
+
 
     return pitch
 
 
 path = "../sounds/violin-B3.wav"
+#path = "../sounds/sine-101.wav"
+
 pitch = fft_pitch(path)
 
