@@ -14,12 +14,12 @@ AUDIO_EXPECTED = [
     ("../MTL_P52/sounds/trumpet-A4.wav", 440),
     ("../MTL_P52/sounds/trumpet-A4.wav", 440),
     ("../MTL_P52/sounds/violin-B3.wav", 247),
-    ]
+]
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_crepe_extractor(audio_path, expected):
-    """ Tests CREPE extractor against different inputs"""
+    """Tests CREPE extractor against different inputs"""
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
@@ -30,6 +30,7 @@ def test_crepe_extractor(audio_path, expected):
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_fft_extractor(audio_path, expected):
+    """Tests fft extractor against different inputs"""
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
@@ -39,6 +40,8 @@ def test_fft_extractor(audio_path, expected):
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_zero_cros_extractor(audio_path, expected):
+    """Tests zero crossing extractor against different inputs"""
+
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
@@ -49,6 +52,8 @@ def test_zero_cros_extractor(audio_path, expected):
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_yin_extractor(audio_path, expected):
+    """Tests YIN extractor against different inputs"""
+
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
