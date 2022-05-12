@@ -1,19 +1,10 @@
-from scipy.io.wavfile import read as wavread
-import logging
-from os import remove, sep
-import subprocess
-
-
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy import long
 from scipy.signal import fftconvolve
 from os import sep
 from audio_processing import *
 import time
-
-
-
-
 
 
 def differenceFunction_original(x, N, tau_max):
@@ -208,7 +199,7 @@ def main(audioFileName="whereIam.wav", w_len=1024, w_step=256, f0_min=70, f0_max
     start = time.time()
     pitches, harmonic_rates, argmins, times = compute_yin(sig, sr, dataFileName, w_len, w_step, f0_min, f0_max, harmo_thresh)
     end = time.time()
-    print "Yin computed in: ", end - start
+    print("Yin computed in: ", end - start)
 
     duration = len(sig)/float(sr)
 
