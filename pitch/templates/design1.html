@@ -2,38 +2,58 @@
 {% block content %}
 
 <style>
-#options{
-    background-color: aqua;
+
+*{
+    padding: 5px;
+    margin: 5px;
+    background-image: black;
 }
+
+#options{
+    background-color:rgb(136, 216, 239);
+    width: 40%;
+
+}
+
+#instrument,#mode,#input{
+background-color: rgb(180, 230, 202);
+
+
+
+}
+
+
+
+
 </style>
 
 <div id="options">
-   <p>Good morning!!</p>
    
-    <p title="I'm a tooltip">Pitch Monitor.</p>
+    <p>Good morning!!</p>
+    <p title="Pitch Monitor">Pitch Monitor.</p>
 
-        <!-- Select for the instruments -->
+    <!-- Select for the instruments -->
     <label for="Intrument">Choose a Instrument:</label>
     <select name="Intrument" id="instrument">
         <option value="Guitar">Guitar</option>
+        <option value="Violin">Violin</option>
         <option value=""></option>
-        <option value=""></option>
-
-
     </select>
 
-        <!-- Select for the Mode -->
+    <!-- Select for the Mode -->
     <label for="Mode">Choose a Mode:</label>
     <select name="Mode" id="mode">
         <option value="monitor">Monitor</option>
-        <option value=""></option>
+        <option value="tunner">Tunner</option>
+        <option value="assesment">Assesment</option>
 
 
     </select>
 
+    <!-- Select for the Input -->
     <label for="Input">Input:</label>
-    <select name="Input" id="Input">
-        <option value="default">Default</option>
+    <select name="Input" id="input">
+        <option title="Micro" value="micro">Default</option>
         <option value=""></option>
 
 
