@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+#options{
+    background-color: aqua;
+}
+</style>
+
+<div id="options">
+   <p>Good morning!!</p>
+   
+    <p title="I'm a tooltip">Pitch Monitor.</p>
+
+        <!-- Select for the instruments -->
+    <label for="Intrument">Choose a Instrument:</label>
+    <select name="Intrument" id="instrument">
+        <option value="Guitar">Guitar</option>
+        <option value=""></option>
+        <option value=""></option>
+
+
+    </select>
+
+        <!-- Select for the Mode -->
+    <label for="Mode">Choose a Mode:</label>
+    <select name="Mode" id="mode">
+        <option value="monitor">Monitor</option>
+        <option value=""></option>
+
+
+    </select>
+
+    <label for="Input">Input:</label>
+    <select name="Input" id="Input">
+        <option value="default">Default</option>
+        <option value=""></option>
+
+
+    </select>
+
+</div>
+{% endblock %}
