@@ -1,6 +1,6 @@
 import crepe
-from scipy.io import wavfile
 import os
+import statistics
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -31,33 +31,6 @@ def crepe_pitch(audio, sr):
     # print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
     # print("time: ", time, "frequency: ", frequency, "confidence: ", confidence)
     # print(len(audio), "\n", len(time), "\n",  len(frequency), "\n",len(confidence),  "\n", len(activation))
-    #return time, frequency, confidence, activation
-    freq = frequency[idxs][0].round()
+    # return time, frequency, confidence, activation
+    freq = statistics.mean(frequency[idxs])
     return freq
-
-
-def test_crepe_extractor():
-    # todo move to test folder once we start testing
-
-    """
-    Tests crepe extractor against the piano.wav file
-    Expected results: notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
-    """
-
-    sr, audio = wavfile.read("../sounds/sine-101.wav")
-    crepe_pitch(audio, sr)
-
-
-def test_crepe_extractor_sin_101():
-    # todo move to test folder once we start testing
-
-    """
-    Tests crepe extractor against the piano.wav file
-    Expected results: notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
-    """
-
-    sr, audio = wavfile.read("../sounds/sine-101.wav")
-    crepe_pitch(audio, sr)
-
-
-# test_crepe_extractor_sin_101()
