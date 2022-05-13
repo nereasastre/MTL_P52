@@ -8,15 +8,15 @@ from scipy.signal import find_peaks
 def fft_pitch(data, sampling_frequency):
 
     # Get some useful statistics
-    T = 1/sampling_frequency  # Sampling period
+    T = 1 / sampling_frequency  # Sampling period
     N = data.size  # Signal length in samples
     t = N / sampling_frequency  # Signal length in seconds
 
-    Y_k = np.fft.fft(data)[0:int(N/2)]/N  # FFT
-    Y_k[1:] = 2*Y_k[1:]  # Single-sided spectrum
+    Y_k = np.fft.fft(data)[0 : int(N / 2)] / N  # FFT
+    Y_k[1:] = 2 * Y_k[1:]  # Single-sided spectrum
     Pxx = np.abs(Y_k)  # Power spectrum
 
-    f = sampling_frequency * np.arange((N/2)) / N  # frequencies
+    f = sampling_frequency * np.arange((N / 2)) / N  # frequencies
 
     auto = sm.tsa.acf(data, nlags=2000)
     peaks = find_peaks(auto)[0]  # Find peaks of the autocorrelation
@@ -27,8 +27,8 @@ def fft_pitch(data, sampling_frequency):
 
     fig, ax = plt.subplots()
     plt.plot(f[0:2000], Pxx[0:2000], linewidth=2)
-    plt.ylabel('Amplitude')
-    plt.xlabel('Frequency [Hz]')
+    plt.ylabel("Amplitude")
+    plt.xlabel("Frequency [Hz]")
     plt.show()
 
     return pitch
