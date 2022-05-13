@@ -1,7 +1,7 @@
 from scipy.io import wavfile
 
 
-def zero_crossing_extractor(audio, fs=44100, silence_thr=0):
+def zero_crossing_extractor(audio, sr=44100, silence_thr=0):
     """
     Extracts the fundamental frequency given an input sound. Limitations: only works well with pure tones.
     :param audio: the input sound
@@ -19,14 +19,15 @@ def zero_crossing_extractor(audio, fs=44100, silence_thr=0):
         ):
             num_crossing += 1
 
-    total_seconds = num_samples / fs
+    total_seconds = num_samples / sr
     num_cycles = num_crossing / 2
     frequency = num_cycles / total_seconds
 
     return frequency
 
-
+"""
 # INFORMAL TEST todo move to tests
 sr, audio = wavfile.read("../sounds/sine-101.wav")
 
 print(zero_crossing_extractor(audio))
+"""

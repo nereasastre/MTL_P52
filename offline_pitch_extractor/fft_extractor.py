@@ -5,9 +5,7 @@ import statsmodels.api as sm
 from scipy.signal import find_peaks
 
 
-def fft_pitch(path):
-    # Load data and sampling frequency from the data file
-    sampling_frequency, data = wavfile.read(path)
+def fft_pitch(data, sampling_frequency):
 
     # Get some useful statistics
     T = 1/sampling_frequency  # Sampling period
@@ -24,7 +22,6 @@ def fft_pitch(path):
     peaks = find_peaks(auto)[0]  # Find peaks of the autocorrelation
     lag = peaks[0]  # Choose the first peak as our pitch component lag
     pitch = sampling_frequency / lag  # Transform lag into frequency
-    print('Pitch detected: ', pitch)
 
     # plotting
 
@@ -34,12 +31,12 @@ def fft_pitch(path):
     plt.xlabel('Frequency [Hz]')
     plt.show()
 
-
     return pitch
 
 
+"""
 path = "../sounds/violin-B3.wav"
 #path = "../sounds/sine-101.wav"
 
 pitch = fft_pitch(path)
-
+"""
