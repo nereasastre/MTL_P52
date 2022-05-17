@@ -17,7 +17,7 @@ AUDIO_EXPECTED = [
 ]
 
 
-@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
 def test_crepe_extractor(audio_path, expected):
     """Tests CREPE extractor against different inputs"""
     # arrange
@@ -28,7 +28,7 @@ def test_crepe_extractor(audio_path, expected):
     assert abs(np.mean(frequency) - expected) < 2
 
 
-@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
 def test_fft_extractor(audio_path, expected):
     """Tests fft extractor against different inputs"""
     # arrange
@@ -38,7 +38,7 @@ def test_fft_extractor(audio_path, expected):
     pass
 
 
-@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
 def test_zero_cros_extractor(audio_path, expected):
     """Tests zero crossing extractor against different inputs"""
 
@@ -50,7 +50,7 @@ def test_zero_cros_extractor(audio_path, expected):
     assert abs(frequency - expected) < 2
 
 
-@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
 def test_yin_extractor(audio_path, expected):
     """Tests YIN extractor against different inputs"""
 
@@ -61,6 +61,6 @@ def test_yin_extractor(audio_path, expected):
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
 # Create your tests here.

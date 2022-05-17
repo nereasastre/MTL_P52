@@ -17,17 +17,25 @@ Extracts pitch offline (after recording is over).
 
 
 def extract_pitch():
-    extractors = [zero_cross_extractor, crepe_extractor, fft_extractor, auto_extractor, yin_extractor]
-    extractor_names = ['Zero Crossing', 'CREPE', 'FFT', 'Autocorrelation', 'YIN']
+    extractors = [
+        zero_cross_extractor,
+        crepe_extractor,
+        fft_extractor,
+        auto_extractor,
+        yin_extractor,
+    ]
+    extractor_names = ["Zero Crossing", "CREPE", "FFT", "Autocorrelation", "YIN"]
 
     # Ask for the extractor type
     extractor_idx = int(
-        input("Insert extractor to use: \n"
-              "    1. Zero Crossing \n"
-              "    2. CREPE \n"
-              "    3. FFT \n"
-              "    4. Autocorrelation \n"
-              "    5. YIN \n")
+        input(
+            "Insert extractor to use: \n"
+            "    1. Zero Crossing \n"
+            "    2. CREPE \n"
+            "    3. FFT \n"
+            "    4. Autocorrelation \n"
+            "    5. YIN \n"
+        )
     )  # Extractor type todo account for wrong inputs
 
     # record and load audio
@@ -37,9 +45,9 @@ def extract_pitch():
 
     # Extract pitch calling the corresponding extractor
 
-    start_time = time.time()        # Measures execution time
+    start_time = time.time()  # Measures execution time
 
-    freq = extractors[extractor_idx-1](audio, sr)
+    freq = extractors[extractor_idx - 1](audio, sr)
 
     end_time = time.time()
     execution_time = end_time - start_time
