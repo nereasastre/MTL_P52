@@ -1,4 +1,3 @@
-
 from scipy.io.wavfile import read as wavread
 import logging
 from os import remove, sep
@@ -19,10 +18,10 @@ def audio_read(audioFilePath, formatsox=False):
         * sig: list of values of the signal
     :rtype: tuple
     """
-    logging.info('Reading of the audio file : ' + audioFilePath)
+    logging.info("Reading of the audio file : " + audioFilePath)
     if formatsox:
         tmpFile = "tmp.wav"
-        logging.info('\t- Conversion en wav 16k with SOX.')
+        logging.info("\t- Conversion en wav 16k with SOX.")
         cmd = "sox " + audioFilePath + " -c 1 -r 16k -b 16 -G " + tmpFile + " rate -m"
         subprocess.check_call(cmd)
         [sr, sig] = wavread(tmpFile)

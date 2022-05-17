@@ -19,9 +19,9 @@ def differenceFunction_original(x, N, tau_max):
     """
     df = [0] * tau_max
     for tau in range(1, tau_max):
-         for j in range(0, N - tau_max):
-             tmp = long(x[j] - x[j + tau])
-             df[tau] += tmp * tmp
+        for j in range(0, N - tau_max):
+            tmp = long(x[j] - x[j + tau])
+            df[tau] += tmp * tmp
     return df
 
 
@@ -42,10 +42,8 @@ def differenceFunction_scipy(x, N, tau_max):
     w = x.size
     x_cumsum = np.concatenate((np.array([0]), (x * x).cumsum()))
     conv = fftconvolve(x, x[::-1])
-    tmp = x_cumsum[w:0:-1] + x_cumsum[w] - x_cumsum[:w] - 2 * conv[w - 1:]
-    return tmp[:tau_max + 1]
-
-
+    tmp = x_cumsum[w:0:-1] + x_cumsum[w] - x_cumsum[:w] - 2 * conv[w - 1 :]
+    return tmp[: tau_max + 1]
 
 
 def differenceFunction(x, N, tau_max):
@@ -63,15 +61,14 @@ def differenceFunction(x, N, tau_max):
     x = np.array(x, np.float64)
     w = x.size
     tau_max = min(tau_max, w)
-    x_cumsum = np.concatenate((np.array([0.]), (x * x).cumsum()))
+    x_cumsum = np.concatenate((np.array([0.0]), (x * x).cumsum()))
     size = w + tau_max
     p2 = (size // 32).bit_length()
     nice_numbers = (16, 18, 20, 24, 25, 27, 30, 32)
-    size_pad = min(x * 2 ** p2 for x in nice_numbers if x * 2 ** p2 >= size)
+    size_pad = min(x * 2**p2 for x in nice_numbers if x * 2**p2 >= size)
     fc = np.fft.rfft(x, size_pad)
     conv = np.fft.irfft(fc * fc.conjugate())[:tau_max]
-    return x_cumsum[w:w - tau_max:-1] + x_cumsum[w] - x_cumsum[:tau_max] - 2 * conv
-
+    return x_cumsum[w : w - tau_max : -1] + x_cumsum[w] - x_cumsum[:tau_max] - 2 * conv
 
 
 def cumulativeMeanNormalizedDifferenceFunction(df, N):
@@ -84,9 +81,8 @@ def cumulativeMeanNormalizedDifferenceFunction(df, N):
     :rtype: list
     """
 
-    cmndf = df[1:] * range(1, N) / np.cumsum(df[1:]).astype(float) #scipy method
+    cmndf = df[1:] * range(1, N) / np.cumsum(df[1:]).astype(float)  # scipy method
     return np.insert(cmndf, 0, 1)
-
 
 
 def getPitch(cmdf, tau_min, tau_max, harmo_th=0.1):
@@ -107,11 +103,19 @@ def getPitch(cmdf, tau_min, tau_max, harmo_th=0.1):
             return tau
         tau += 1
 
-    return 0    # if unvoiced
+    return 0  # if unvoiced
 
 
-
-def compute_yin(sig, sr, dataFileName=None, w_len=512, w_step=256, f0_min=100, f0_max=500, harmo_thresh=0.1):
+def compute_yin(
+    sig,
+    sr,
+    dataFileName=None,
+    w_len=512,
+    w_step=256,
+    f0_min=100,
+    f0_max=500,
+    harmo_thresh=0.1,
+):
     """
     Compute the Yin Algorithm. Return fundamental frequency and harmonic rate.
     :param sig: Audio signal (list of float)
@@ -129,13 +133,15 @@ def compute_yin(sig, sr, dataFileName=None, w_len=512, w_step=256, f0_min=100, f
     :rtype: tuple
     """
 
-    print('Yin: compute yin algorithm')
+    print("Yin: compute yin algorithm")
     tau_min = int(sr / f0_max)
     tau_max = int(sr / f0_min)
 
-    timeScale = range(0, len(sig) - w_len, w_step)  # time values for each analysis window
-    times = [t/float(sr) for t in timeScale]
-    frames = [sig[t:t + w_len] for t in timeScale]
+    timeScale = range(
+        0, len(sig) - w_len, w_step
+    )  # time values for each analysis window
+    times = [t / float(sr) for t in timeScale]
+    frames = [sig[t : t + w_len] for t in timeScale]
 
     pitches = [0.0] * len(timeScale)
     harmonic_rates = [0.0] * len(timeScale)
@@ -143,29 +149,50 @@ def compute_yin(sig, sr, dataFileName=None, w_len=512, w_step=256, f0_min=100, f
 
     for i, frame in enumerate(frames):
 
-        #Compute YIN
+        # Compute YIN
         df = differenceFunction(frame, w_len, tau_max)
         cmdf = cumulativeMeanNormalizedDifferenceFunction(df, tau_max)
         p = getPitch(cmdf, tau_min, tau_max, harmo_thresh)
 
-        #Get results
-        if np.argmin(cmdf)>tau_min:
+        # Get results
+        if np.argmin(cmdf) > tau_min:
             argmins[i] = float(sr / np.argmin(cmdf))
-        if p != 0: # A pitch was found
+        if p != 0:  # A pitch was found
             pitches[i] = float(sr / p)
             harmonic_rates[i] = cmdf[p]
-        else: # No pitch, but we compute a value of the harmonic rate
+        else:  # No pitch, but we compute a value of the harmonic rate
             harmonic_rates[i] = min(cmdf)
 
-
     if dataFileName is not None:
-        np.savez(dataFileName, times=times, sr=sr, w_len=w_len, w_step=w_step, f0_min=f0_min, f0_max=f0_max, harmo_thresh=harmo_thresh, pitches=pitches, harmonic_rates=harmonic_rates, argmins=argmins)
-        print('\t- Data file written in: ' + dataFileName)
+        np.savez(
+            dataFileName,
+            times=times,
+            sr=sr,
+            w_len=w_len,
+            w_step=w_step,
+            f0_min=f0_min,
+            f0_max=f0_max,
+            harmo_thresh=harmo_thresh,
+            pitches=pitches,
+            harmonic_rates=harmonic_rates,
+            argmins=argmins,
+        )
+        print("\t- Data file written in: " + dataFileName)
 
     return pitches, harmonic_rates, argmins, times
 
 
-def main(audioFileName="whereIam.wav", w_len=1024, w_step=256, f0_min=70, f0_max=200, harmo_thresh=0.85, audioDir="./", dataFileName=None, verbose=4):
+def main(
+    audioFileName="whereIam.wav",
+    w_len=1024,
+    w_step=256,
+    f0_min=70,
+    f0_max=200,
+    harmo_thresh=0.85,
+    audioDir="./",
+    dataFileName=None,
+    verbose=4,
+):
     """
     Run the computation of the Yin algorithm on a example file.
     Write the results (pitches, harmonic rates, parameters ) in a numpy file.
@@ -197,34 +224,54 @@ def main(audioFileName="whereIam.wav", w_len=1024, w_step=256, f0_min=70, f0_max
     sr, sig = audio_read(audioFilePath, formatsox=False)
 
     start = time.time()
-    pitches, harmonic_rates, argmins, times = compute_yin(sig, sr, dataFileName, w_len, w_step, f0_min, f0_max, harmo_thresh)
+    pitches, harmonic_rates, argmins, times = compute_yin(
+        sig, sr, dataFileName, w_len, w_step, f0_min, f0_max, harmo_thresh
+    )
     end = time.time()
     print("Yin computed in: ", end - start)
 
-    duration = len(sig)/float(sr)
+    duration = len(sig) / float(sr)
 
-    if verbose >3:
+    if verbose > 3:
         ax1 = plt.subplot(4, 1, 1)
         ax1.plot([float(x) * duration / len(sig) for x in range(0, len(sig))], sig)
-        ax1.set_title('Audio data')
-        ax1.set_ylabel('Amplitude')
+        ax1.set_title("Audio data")
+        ax1.set_ylabel("Amplitude")
         ax2 = plt.subplot(4, 1, 2)
-        ax2.plot([float(x) * duration / len(pitches) for x in range(0, len(pitches))], pitches)
-        ax2.set_title('F0')
-        ax2.set_ylabel('Frequency (Hz)')
+        ax2.plot(
+            [float(x) * duration / len(pitches) for x in range(0, len(pitches))],
+            pitches,
+        )
+        ax2.set_title("F0")
+        ax2.set_ylabel("Frequency (Hz)")
         ax3 = plt.subplot(4, 1, 3, sharex=ax2)
-        ax3.plot([float(x) * duration / len(harmonic_rates) for x in range(0, len(harmonic_rates))], harmonic_rates)
-        ax3.plot([float(x) * duration / len(harmonic_rates) for x in range(0, len(harmonic_rates))], [harmo_thresh] * len(harmonic_rates), 'r')
-        ax3.set_title('Harmonic rate')
-        ax3.set_ylabel('Rate')
+        ax3.plot(
+            [
+                float(x) * duration / len(harmonic_rates)
+                for x in range(0, len(harmonic_rates))
+            ],
+            harmonic_rates,
+        )
+        ax3.plot(
+            [
+                float(x) * duration / len(harmonic_rates)
+                for x in range(0, len(harmonic_rates))
+            ],
+            [harmo_thresh] * len(harmonic_rates),
+            "r",
+        )
+        ax3.set_title("Harmonic rate")
+        ax3.set_ylabel("Rate")
         ax4 = plt.subplot(4, 1, 4, sharex=ax2)
-        ax4.plot([float(x) * duration / len(argmins) for x in range(0, len(argmins))], argmins)
-        ax4.set_title('Index of minimums of CMND')
-        ax4.set_ylabel('Frequency (Hz)')
-        ax4.set_xlabel('Time (seconds)')
+        ax4.plot(
+            [float(x) * duration / len(argmins) for x in range(0, len(argmins))],
+            argmins,
+        )
+        ax4.set_title("Index of minimums of CMND")
+        ax4.set_ylabel("Frequency (Hz)")
+        ax4.set_xlabel("Time (seconds)")
         plt.show()
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
