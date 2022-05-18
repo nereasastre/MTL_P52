@@ -1,42 +1,48 @@
-from scipy.io import wavfile
+import statistics
+
 import matplotlib.pyplot as plt
 import numpy as np
-import statsmodels.api as sm
-from scipy.signal import find_peaks
 
 
-def fft_pitch(data, sampling_frequency):
+def fft_extractor(audio, sr=44100):
+    """
+    Extracts the fundamental frequency given an input sound using the FFT method.
+    Args:
+        audio: the input sound
+        sr: the sampling frequency
+    Output:
+        frequency: the estimated fundamental frequency
+    """
 
-    # Get some useful statistics
-    T = 1 / sampling_frequency  # Sampling period
-    N = data.size  # Signal length in samples
-    t = N / sampling_frequency  # Signal length in seconds
+    T = 1 / sr  # Sampling period
+    N = audio.size  # Signal length in samples
+    t = N / sr  # Signal length in seconds
 
-    Y_k = np.fft.fft(data)[0 : int(N / 2)] / N  # FFT
-    Y_k[1:] = 2 * Y_k[1:]  # Single-sided spectrum
-    Pxx = np.abs(Y_k)  # Power spectrum
+    audio_fft = np.fft.fft(audio)[0 : int(N / 2)] / N  # FFT
+    audio_fft[1:] = 2 * audio_fft[1:]  # Single-sided spectrum
+    spec = np.abs(audio_fft)  # Power spectrum
 
-    f = sampling_frequency * np.arange((N / 2)) / N  # frequencies
+    freqs = sr * np.arange((N / 2)) / N  # frequencies
 
-    auto = sm.tsa.acf(data, nlags=2000)
-    peaks = find_peaks(auto)[0]  # Find peaks of the autocorrelation
-    lag = peaks[0]  # Choose the first peak as our pitch component lag
-    pitch = sampling_frequency / lag  # Transform lag into frequency
+    """th = 100
+    idxs = [0]
+    last_idx = -1
 
+    for i in range(1, len(spec)):
+
+        if last_idx > 0 and abs(last_idx - i) > 10:
+            break
+
+        elif spec[i] > th:
+            last_idx = i
+            idxs.append(i)
+
+    freq = statistics.mean(freqs[idxs])"""
     # plotting
-
     fig, ax = plt.subplots()
-    plt.plot(f[0:2000], Pxx[0:2000], linewidth=2)
+    plt.plot(freqs[:2000], spec[:2000], linewidth=2)
     plt.ylabel("Amplitude")
     plt.xlabel("Frequency [Hz]")
     plt.show()
 
-    return pitch
-
-
-"""
-path = "../sounds/violin-B3.wav"
-#path = "../sounds/sine-101.wav"
-
-pitch = fft_pitch(path)
-"""
+    return freqs
