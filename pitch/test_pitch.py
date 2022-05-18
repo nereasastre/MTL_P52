@@ -1,9 +1,9 @@
 import unittest
 from scipy.io import wavfile
 import numpy as np
-from offline_pitch_extractor.crepe_extractor import crepe_pitch
-from offline_pitch_extractor.fft_extractor import fft_pitch
-from offline_pitch_extractor.zero_cros_extractor import zero_crossing_extractor
+from offline_pitch_extractor.crepe_extractor import crepe_extractor
+from offline_pitch_extractor.fft_extractor import fft_extractor
+from offline_pitch_extractor.zero_cross_extractor import zero_cross_extractor
 import pytest
 
 
@@ -24,9 +24,9 @@ def test_crepe_extractor(audio_path, expected):
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
-    frequency = crepe_pitch(audio, fs)
+    frequency = crepe_extractor(audio, fs)
     # assert
-    assert abs(frequency - expected) < 2
+    assert abs(frequency - expected) < 5
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -35,9 +35,9 @@ def test_fft_extractor(audio_path, expected):
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
-    frequency = fft_pitch(audio, fs)
+    frequency = fft_extractor(audio, fs)
     # assert
-    assert abs(np.mean(frequency) - expected) < 2
+    assert abs(frequency - expected) < 5
     pass
 
 
@@ -48,9 +48,9 @@ def test_zero_cros_extractor(audio_path, expected):
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
-    frequency = zero_crossing_extractor(audio, fs)
+    frequency = zero_cross_extractor(audio, fs)
     # assert
-    assert abs(frequency - expected) < 2
+    assert abs(frequency - expected) < 5
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
