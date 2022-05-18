@@ -42,7 +42,7 @@ def test_fft_extractor(audio_path, expected):
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
-def test_zero_cros_extractor(audio_path, expected):
+def test_zero_cross_extractor(audio_path, expected):
     """Tests zero crossing extractor against different inputs"""
 
     # arrange
