@@ -8,7 +8,7 @@ def zero_cross_extractor(audio, sr=44100, silence_thr=0):
         audio: the input sound
         sr: the sampling frequency
         silence_thr: the threshold that we count as 0
-    Output:
+    Returns:
         frequency: the estimated fundamental frequency
     """
     num_samples = len(audio)

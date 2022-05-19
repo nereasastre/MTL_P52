@@ -10,7 +10,7 @@ def fft_extractor(audio, sr=44100):
     Args:
         audio: the input sound
         sr: the sampling frequency
-    Output:
+    Returns:
         frequency: the estimated fundamental frequency
     """
 
