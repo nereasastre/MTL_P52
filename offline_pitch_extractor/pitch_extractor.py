@@ -10,13 +10,12 @@ import time
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../"))
 from sound_recorder.record_and_export import record_and_export
 
-"""
-Records sound for a given amount of seconds and then attempts to extract pitch. 
-Extracts pitch offline (after recording is over).
-"""
-
 
 def extract_pitch():
+    """
+    Records sound for a given amount of seconds and then attempts to extract pitch.
+    Extracts pitch offline (after recording is over).
+    """
     extractors = [zero_cross_extractor, crepe_extractor, fft_extractor, auto_extractor, yin_extractor]
     extractor_names = ['Zero Crossing', 'CREPE', 'FFT', 'Autocorrelation', 'YIN']
 

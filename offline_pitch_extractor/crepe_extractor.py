@@ -11,7 +11,7 @@ def crepe_extractor(audio, sr=44100):
     Args:
         audio: a .wav file containing the audio from which to extract pitch
         sr: the sampling rate of the audio
-    Output:
+    Returns:
         frequency: the detected frequency
     """
     time, freqs, confidence, activation = crepe.predict(audio, sr, viterbi=True)
