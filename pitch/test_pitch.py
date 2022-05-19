@@ -3,8 +3,10 @@ from scipy.io import wavfile
 import numpy as np
 from offline_pitch_extractor.crepe_extractor import crepe_extractor
 from offline_pitch_extractor.fft_extractor import fft_extractor
+from offline_pitch_extractor.yin_extractor import yin_extractor
 from offline_pitch_extractor.zero_cross_extractor import zero_cross_extractor
 import pytest
+import time
 
 
 AUDIO_EXPECTED = [
@@ -17,6 +19,17 @@ AUDIO_EXPECTED = [
     ("../MTL_P52/sounds/violin-B3.wav", 247),
 ]
 
+AUDIO = [
+    "../MTL_P52/sounds/sine-101.wav",
+    "../MTL_P52/sounds/sine-440.wav",
+    "../MTL_P52/sounds/sine-490.wav",
+    "../MTL_P52/sounds/sine-1000.wav",
+    "../MTL_P52/sounds/trumpet-A4.wav",
+    "../MTL_P52/sounds/trumpet-A4.wav",
+    "../MTL_P52/sounds/violin-B3.wav"
+]
+
+EXTRACTORS = [crepe_extractor, fft_extractor, yin_extractor, zero_cross_extractor]
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_crepe_extractor(audio_path, expected):
@@ -60,10 +73,25 @@ def test_yin_extractor(audio_path, expected):
     # arrange
     fs, audio = wavfile.read(audio_path)
     # act
-    # todo add frequency extractor once yin is pushed
-    pass
+    frequency = yin_extractor(audio, fs)
+    # assert
+    assert abs(np.mean(frequency) - expected) < 5
 
 
-if __name__ == '__main__':
-    unittest.main()
-# Create your tests here.
+@pytest.mark.parametrize('extractor', EXTRACTORS)
+def test_execution_time(extractor):
+    # arrange
+    audio_path = "../MTL_P52/sounds/sine-101.wav"
+    fs, audio = wavfile.read(audio_path)
+    start_time = time.time()
+
+    # act
+    frequency = extractor(audio, fs)
+    end_time = time.time()
+
+    # assert
+    execution_time = end_time - start_time
+    audio_duration = len(audio) / fs
+    real_time_factor = execution_time / audio_duration
+    assert real_time_factor <= 1
+
