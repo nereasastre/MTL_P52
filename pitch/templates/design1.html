@@ -7,51 +7,55 @@
     padding: 5px;
     margin: 5px;
     background-image: black;
+
 }
 
 #options{
     background-color:rgb(136, 216, 239);
-    width: 40%;
+    width: 400px;
+    font-family: verdana;
+    
 
 }
 
 #instrument,#mode,#input{
 background-color: rgb(180, 230, 202);
 
-
-
 }
 
-
-
+}
 
 </style>
 
 <div id="options">
-   
-    <p>Good morning!!</p>
-    <p title="Pitch Monitor">Pitch Monitor.</p>
+    <h2 style="color:green;  text-align: center; font-size: 30px; font-family: verdana;">Pitch Monitor</h2>
 
     <!-- Select for the instruments -->
-    <label for="Intrument">Choose a Instrument:</label>
+    <label for="Intrument"> <h4> Choose a Instrument: </h4> </label>
     <select name="Intrument" id="instrument">
         <option value="Guitar">Guitar</option>
         <option value="Violin">Violin</option>
-        <option value=""></option>
+        <option value="Flute">Flute</option>
+        <option value="Bass">Bass</option>
+        <option value="Cello">Cello</option>
+        <option value="DoubleBass">DoubleBass</option>
+        <option value="Sax">Sax</option>
+        <option value="Trombone">Trombone</option>
+        <option value="Bass Horn">Bass Horn</option>
+        <option value="Ukulele">Ukulele</option>
     </select>
 
     <!-- Select for the Mode -->
-    <label for="Mode">Choose a Mode:</label>
+    <label for="Mode"> <h4> Choose a Mode:</h4> </label>
     <select name="Mode" id="mode">
         <option value="monitor">Monitor</option>
         <option value="tunner">Tunner</option>
         <option value="assesment">Assesment</option>
 
-
     </select>
 
     <!-- Select for the Input -->
-    <label for="Input">Input:</label>
+    <label for="Input"> <h4>Input:</h4> </label>
     <select name="Input" id="input">
         <option title="Micro" value="micro">Default</option>
         <option value=""></option>
