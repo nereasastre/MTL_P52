@@ -1,5 +1,6 @@
 import crepe
 import os
+import numpy as np
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 

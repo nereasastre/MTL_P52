@@ -19,6 +19,12 @@ AUDIO_EXPECTED = [
     ("../MTL_P52/sounds/soprano-E4.wav", 329),
     ("../MTL_P52/sounds/trumpet-A4.wav", 440),
     ("../MTL_P52/sounds/violin-B3.wav", 247),
+    ("../MTL_P52/sounds/vibraphone-C6.wav", 1047),
+    ("../MTL_P52/sounds/sawtooth-440.wav", 440),
+]
+
+AUDIO_EXPECTED1 = [
+    ("../MTL_P52/sounds/sawtooth-440.wav", 440),
 ]
 
 
@@ -33,7 +39,7 @@ def test_crepe_extractor(audio_path, expected):
     # act
     frequency = crepe_extractor(audio, fs)
     # assert
-    assert abs(frequency - expected) < 5
+    assert abs(frequency - expected) <= 3
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -43,8 +49,10 @@ def test_fft_extractor(audio_path, expected):
     fs, audio = wavfile.read(audio_path)
     # act
     frequency = fft_extractor(audio, fs)
+    freq = np.where(frequency == np.max(frequency))[0][0]*audio.size/fs/2
+    print(freq)
     # assert
-    assert abs(frequency - expected) < 5
+    assert abs(freq - expected) <= 3
     pass
 
 
@@ -57,7 +65,7 @@ def test_zero_cross_extractor(audio_path, expected):
     # act
     frequency = zero_cross_extractor(audio, fs)
     # assert
-    assert abs(frequency - expected) < 5
+    assert abs(frequency - expected) <= 3
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -69,7 +77,12 @@ def test_yin_extractor(audio_path, expected):
     # act
     frequency = yin_extractor(audio, fs)
     # assert
-    assert abs(frequency[0] - expected) < 5
+    non_zero_freq = []
+    for freq in frequency:
+        if freq > 20:
+            non_zero_freq.append(freq)
+
+    assert abs(np.mean(non_zero_freq) - expected) <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -80,7 +93,7 @@ def test_auto_extractor(audio_path, expected):
     # act
     frequency = auto_extractor(audio, fs)
     # assert
-    assert abs(frequency - expected) < 5
+    assert abs(frequency - expected) <= 3
 
 
 @pytest.mark.parametrize('extractor', EXTRACTORS)

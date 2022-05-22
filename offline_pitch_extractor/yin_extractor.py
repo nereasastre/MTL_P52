@@ -166,7 +166,7 @@ def compute_yin(sig, sr, w_len=512, w_step=256, f0_min=100.0, f0_max=500.0, harm
     return pitches, harmonic_rates, argmins, times
 
 
-def yin_extractor(audio, sr=44100, w_len=1024, w_step=256, f0_min=70.0, f0_max=200.0, harm_thresh=0.85):
+def yin_extractor(audio, sr=44100, w_len=1024, w_step=256, f0_min=70.0, f0_max=1500.0, harm_thresh=0.07):
     """
     Run the computation of the Yin algorithm on a example file.
     Write the results (pitches, harmonic rates, parameters ) in a numpy file.
