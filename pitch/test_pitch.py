@@ -35,9 +35,9 @@ EXTRACTORS = [crepe_extractor, fft_extractor, yin_extractor, zero_cross_extracto
 def test_crepe_extractor(audio_path, expected):
     """Tests CREPE extractor against different inputs"""
     # arrange
-    fs, audio = wavfile.read(audio_path)
+    sr, audio = wavfile.read(audio_path)
     # act
-    frequency = crepe_extractor(audio, fs)
+    frequency = crepe_extractor(audio, sr)
     # assert
     assert abs(frequency - expected) <= 3
 
@@ -46,10 +46,10 @@ def test_crepe_extractor(audio_path, expected):
 def test_fft_extractor(audio_path, expected):
     """Tests fft extractor against different inputs"""
     # arrange
-    fs, audio = wavfile.read(audio_path)
+    sr, audio = wavfile.read(audio_path)
     # act
-    frequency = fft_extractor(audio, fs)
-    freq = np.where(frequency == np.max(frequency))[0][0]*audio.size/fs/2
+    frequency = fft_extractor(audio, sr)
+    freq = np.where(frequency == np.max(frequency))[0][0]*audio.size/sr/2
     print(freq)
     # assert
     assert abs(freq - expected) <= 3
@@ -61,9 +61,9 @@ def test_zero_cross_extractor(audio_path, expected):
     """Tests zero crossing extractor against different inputs"""
 
     # arrange
-    fs, audio = wavfile.read(audio_path)
+    sr, audio = wavfile.read(audio_path)
     # act
-    frequency = zero_cross_extractor(audio, fs)
+    frequency = zero_cross_extractor(audio, sr)
     # assert
     assert abs(frequency - expected) <= 3
 
@@ -73,15 +73,14 @@ def test_yin_extractor(audio_path, expected):
     """Tests YIN extractor against different inputs"""
 
     # arrange
-    fs, audio = wavfile.read(audio_path)
+    sr, audio = wavfile.read(audio_path)
     # act
-    frequency = yin_extractor(audio, fs)
+    frequency = yin_extractor(audio, sr)
     # assert
     non_zero_freq = []
     for freq in frequency:
         if freq > 20:
             non_zero_freq.append(freq)
-
     assert abs(np.mean(non_zero_freq) - expected) <= 4
 
 
@@ -89,9 +88,9 @@ def test_yin_extractor(audio_path, expected):
 def test_auto_extractor(audio_path, expected):
     """Tests autocorrelation extractor against different inputs"""
     # arrange
-    fs, audio = wavfile.read(audio_path)
+    sr, audio = wavfile.read(audio_path)
     # act
-    frequency = auto_extractor(audio, fs)
+    frequency = auto_extractor(audio, sr)
     # assert
     assert abs(frequency - expected) <= 3
 
@@ -100,16 +99,16 @@ def test_auto_extractor(audio_path, expected):
 def test_execution_time(extractor):
     # arrange
     audio_path = "../MTL_P52/sounds/sine-101.wav"
-    fs, audio = wavfile.read(audio_path)
+    sr, audio = wavfile.read(audio_path)
     start_time = time.time()
 
     # act
-    frequency = extractor(audio, fs)
+    frequency = extractor(audio, sr)
     end_time = time.time()
 
     # assert
     execution_time = end_time - start_time
-    audio_duration = len(audio) / fs
+    audio_duration = len(audio) / sr
     real_time_factor = execution_time / audio_duration
     assert real_time_factor <= 1
 
