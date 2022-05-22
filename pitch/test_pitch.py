@@ -1,6 +1,8 @@
 import unittest
 from scipy.io import wavfile
 import numpy as np
+
+from offline_pitch_extractor.auto_extractor import auto_extractor
 from offline_pitch_extractor.crepe_extractor import crepe_extractor
 from offline_pitch_extractor.fft_extractor import fft_extractor
 from offline_pitch_extractor.yin_extractor import yin_extractor
@@ -14,22 +16,14 @@ AUDIO_EXPECTED = [
     ("../MTL_P52/sounds/sine-440.wav", 440),
     ("../MTL_P52/sounds/sine-490.wav", 490),
     ("../MTL_P52/sounds/sine-1000.wav", 1000),
-    ("../MTL_P52/sounds/trumpet-A4.wav", 440),
+    ("../MTL_P52/sounds/soprano-E4.wav", 329),
     ("../MTL_P52/sounds/trumpet-A4.wav", 440),
     ("../MTL_P52/sounds/violin-B3.wav", 247),
 ]
 
-AUDIO = [
-    "../MTL_P52/sounds/sine-101.wav",
-    "../MTL_P52/sounds/sine-440.wav",
-    "../MTL_P52/sounds/sine-490.wav",
-    "../MTL_P52/sounds/sine-1000.wav",
-    "../MTL_P52/sounds/trumpet-A4.wav",
-    "../MTL_P52/sounds/trumpet-A4.wav",
-    "../MTL_P52/sounds/violin-B3.wav"
-]
 
 EXTRACTORS = [crepe_extractor, fft_extractor, yin_extractor, zero_cross_extractor]
+
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_crepe_extractor(audio_path, expected):
@@ -75,7 +69,18 @@ def test_yin_extractor(audio_path, expected):
     # act
     frequency = yin_extractor(audio, fs)
     # assert
-    assert abs(np.mean(frequency) - expected) < 5
+    assert abs(frequency[0] - expected) < 5
+
+
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+def test_auto_extractor(audio_path, expected):
+    """Tests autocorrelation extractor against different inputs"""
+    # arrange
+    fs, audio = wavfile.read(audio_path)
+    # act
+    frequency = auto_extractor(audio, fs)
+    # assert
+    assert abs(frequency - expected) < 5
 
 
 @pytest.mark.parametrize('extractor', EXTRACTORS)
