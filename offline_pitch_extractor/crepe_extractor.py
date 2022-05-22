@@ -27,6 +27,6 @@ def crepe_extractor(audio, sr=44100):
                 idxs.append(idx)
 
     freq = np.mean(freqs[idxs])
-    return freq
+    return freqs
 
 

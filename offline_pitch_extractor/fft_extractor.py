@@ -6,14 +6,16 @@ import math
 
 tol = 1e-14
 
+
 def log2(x):
     return (math.log10(x) /
-            math.log10(2));
+            math.log10(2))
 
 
 def is_power2(n):
 
-    return math.ceil(log2(n)) == math.floor(log2(n));
+    return math.ceil(log2(n)) == math.floor(log2(n))
+
 
 def peakDetection(mX, t):
     """
@@ -22,7 +24,7 @@ def peakDetection(mX, t):
     returns ploc: peak locations
     """
 
-    thresh = np.where(np.greater(mX[1:-1],t), mX[1:-1], 0); # locations above threshold
+    thresh = np.where(np.greater(mX[1:-1],t), mX[1:-1], 0)  # locations above threshold
     next_minor = np.where(mX[1:-1]>mX[2:], mX[1:-1], 0)     # locations higher than the next one
     prev_minor = np.where(mX[1:-1]>mX[:-2], mX[1:-1], 0)    # locations higher than the previous one
     ploc = thresh * next_minor * prev_minor                 # locations fulfilling the three criteria
@@ -149,6 +151,7 @@ def TWM_p(pfreq, pmag, f0c):
     f0 = f0c[f0index]                                # f0 with the smallest error
 
     return f0, Error[f0index]
+
 
 def peakInterp(mX, pX, ploc):
     """
@@ -477,7 +480,7 @@ def harmonicModelAnal(x, fs, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope=0.
     return xhfreq, xhmag, xhphase
 
 
-def fft_extractor(audio, sr=44100, N=2048, H=1024, t=-90, nH=25, minf0=80, maxf0=1500, f0et=5, harmDevSlope=0.02, minSineDur=0.01, Ns=2048, stocf=0.3):
+def fft_extractor(audio, sr=44100, M=2001, H=2*256, t=-90, nH=5, minf0=50, maxf0=1500, f0et=2, harmDevSlope=0.01, minSineDur=0.01, Ns=2048, stocf=0.3):
     """
     Extracts the fundamental frequency given an input sound using the FFT method.
     Args:
@@ -494,8 +497,9 @@ def fft_extractor(audio, sr=44100, N=2048, H=1024, t=-90, nH=25, minf0=80, maxf0
     harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
     returns hfreq, hmag, hphase: harmonic frequencies, magnitude and phases; stocEnv: stochastic residual
     """
+    N = int(2**np.ceil(np.log2(M)))
+    w = signal.windows.blackmanharris(M)
 
-    w = signal.windows.blackmanharris(N)
     # perform harmonic analysis
     hfreq, hmag, hphase = harmonicModelAnal(audio, sr, w, N, H, t, nH, minf0, maxf0, f0et, harmDevSlope, minSineDur)
     # subtract sinusoids from original sound
@@ -504,32 +508,33 @@ def fft_extractor(audio, sr=44100, N=2048, H=1024, t=-90, nH=25, minf0=80, maxf0
     stocEnv = stochasticModelAnal(xr, H, H * 2, stocf)
 
     # create figure to plot
-    plt.figure(figsize=(9, 6))
+    #plt.figure(figsize=(9, 6))
 
     # frequency range to plot
-    maxplotfreq = 15000.0
+    maxplotfreq = 2000.0
 
     # plot spectrogram stochastic component
-    plt.subplot(3, 1, 2)
+    # plt.subplot(3, 1, 2)
     numFrames = int(stocEnv[:, 0].size)
     sizeEnv = int(stocEnv[0, :].size)
     frmTime = H * np.arange(numFrames) / float(sr)
     binFreq = (.5 * sr) * np.arange(sizeEnv * maxplotfreq / (.5 * sr)) / sizeEnv
-    plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:, :int(sizeEnv * maxplotfreq / (.5 * sr) + 1)]))
-    plt.autoscale(tight=True)
+    # plt.pcolormesh(frmTime, binFreq, np.transpose(stocEnv[:, :int(sizeEnv * maxplotfreq / (.5 * sr) + 1)]))
+    # plt.autoscale(tight=True)
 
     # plot harmonic on top of stochastic spectrogram
     if (hfreq.shape[1] > 0):
         harms = hfreq * np.less(hfreq, maxplotfreq)
-        harms[harms == 0] = np.nan
+        harms[harms == np.nan] = 0
         numFrames = harms.shape[0]
         frmTime = H * np.arange(numFrames) / float(sr)
-        plt.plot(frmTime, harms[:2000], color='k', ms=3, alpha=1)
+        """plt.plot(frmTime, harms[:,0], color='k', ms=3, alpha=1)
         plt.xlabel('time (sec)')
         plt.ylabel('frequency (Hz)')
         plt.autoscale(tight=True)
-        plt.title('harmonics + stochastic spectrogram')
+        plt.title(f"harmonics + stochastic spectrogram")"""
 
-    plt.tight_layout()
-    plt.show()
-    return hfreq[1]
+    # plt.tight_layout()
+    # plt.show()
+
+    return harms[:,0]

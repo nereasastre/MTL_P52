@@ -31,6 +31,14 @@ AUDIO_EXPECTED1 = [
 EXTRACTORS = [crepe_extractor, fft_extractor, yin_extractor, zero_cross_extractor]
 
 
+def clean_frequencies(frequency):
+    non_zero_freq = []
+    for freq in frequency:
+        if freq > 20:
+            non_zero_freq.append(freq)
+    return non_zero_freq
+
+
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_crepe_extractor(audio_path, expected):
     """Tests CREPE extractor against different inputs"""
@@ -39,7 +47,7 @@ def test_crepe_extractor(audio_path, expected):
     # act
     frequency = crepe_extractor(audio, sr)
     # assert
-    assert abs(frequency - expected) <= 3
+    assert abs(np.mean(frequency) - expected) <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -49,11 +57,10 @@ def test_fft_extractor(audio_path, expected):
     sr, audio = wavfile.read(audio_path)
     # act
     frequency = fft_extractor(audio, sr)
-    freq = np.where(frequency == np.max(frequency))[0][0]*audio.size/sr/2
-    print(freq)
     # assert
-    assert abs(freq - expected) <= 3
-    pass
+    non_zero_freq = clean_frequencies(frequency)
+
+    assert abs(np.mean(non_zero_freq) - expected) <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -77,10 +84,7 @@ def test_yin_extractor(audio_path, expected):
     # act
     frequency = yin_extractor(audio, sr)
     # assert
-    non_zero_freq = []
-    for freq in frequency:
-        if freq > 20:
-            non_zero_freq.append(freq)
+    non_zero_freq = clean_frequencies(frequency)
     assert abs(np.mean(non_zero_freq) - expected) <= 4
 
 
