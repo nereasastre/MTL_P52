@@ -1,5 +1,3 @@
-import statistics
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -8,10 +6,10 @@ def fft_extractor(audio, sr=44100):
     """
     Extracts the fundamental frequency given an input sound using the FFT method.
     Args:
-        audio: the input sound
-        sr: the sampling frequency
+        audio: the input sound (list of float)
+        sr: the sampling rate (int)
     Returns:
-        frequency: the estimated fundamental frequency
+        freq: the estimated fundamental frequency (float)
     """
 
     T = 1 / sr  # Sampling period
@@ -37,7 +35,7 @@ def fft_extractor(audio, sr=44100):
             last_idx = i
             idxs.append(i)
 
-    freq = statistics.mean(freqs[idxs])"""
+    freq = np.mean(freqs[idxs])"""
     # plotting
     fig, ax = plt.subplots()
     plt.plot(freqs[:2000], spec[:2000], linewidth=2)

@@ -1,6 +1,5 @@
 import crepe
 import os
-import statistics
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -9,10 +8,10 @@ def crepe_extractor(audio, sr=44100):
     """
     Extracts the fundamental frequency given an input sound using the crepe prediction method.
     Args:
-        audio: a .wav file containing the audio from which to extract pitch
-        sr: the sampling rate of the audio
+        audio: the input sound (list of float)
+        sr: the sampling rate (int)
     Returns:
-        frequency: the detected frequency
+        freq: the estimated fundamental frequency (float)
     """
     time, freqs, confidence, activation = crepe.predict(audio, sr, viterbi=True)
 
@@ -26,5 +25,7 @@ def crepe_extractor(audio, sr=44100):
             if idx != 0:
                 idxs.append(idx)
 
-    frequency = statistics.mean(freqs[idxs])
-    return frequency
+    freq = np.mean(freqs[idxs])
+    return freq
+
+

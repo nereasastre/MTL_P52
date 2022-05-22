@@ -6,15 +6,15 @@ def auto_extractor(audio, sr=44100):
     """
     Extracts the fundamental frequency given an input sound using the FFT method.
     Args:
-        audio: the input sound
-        sr: the sampling frequency
+        audio: the input sound (list of float)
+        sr: the sampling rate (int)
     Returns:
-        frequency: the estimated fundamental frequency
+        freq: the estimated fundamental frequency (float)
     """
     # Get some useful statistics
     auto = sm.tsa.acf(audio, nlags=2000)
     peaks = find_peaks(auto)[0]  # Find peaks of the autocorrelation
     lag = peaks[0]  # Choose the first peak as our pitch component lag
-    frequency = sr / lag  # Transform lag into frequency
+    freq = sr / lag  # Transform lag into frequency
 
-    return frequency
+    return freq

@@ -5,11 +5,10 @@ def zero_cross_extractor(audio, sr=44100, silence_thr=0):
     Extracts the fundamental frequency given an input sound using the zero crossing method.
     Limitations: only works well with pure tones.
     Args:
-        audio: the input sound
-        sr: the sampling frequency
-        silence_thr: the threshold that we count as 0
+        audio: the input sound (list of float)
+        sr: the sampling rate (int)
     Returns:
-        frequency: the estimated fundamental frequency
+        freq: the estimated fundamental frequency (float)
     """
     num_samples = len(audio)
     num_crossing = 0  # number of crossings
@@ -23,6 +22,6 @@ def zero_cross_extractor(audio, sr=44100, silence_thr=0):
 
     total_seconds = num_samples / sr
     num_cycles = num_crossing / 2
-    frequency = num_cycles / total_seconds
+    freq = num_cycles / total_seconds
 
-    return frequency
+    return freq
