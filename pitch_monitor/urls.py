@@ -20,9 +20,6 @@ from django.urls import path
 from django.urls.conf import include
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("pitch.urls", namespace="pitch")),
-]
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path("admin/", admin.site.urls),
+                  path("", include("pitch.urls", namespace="pitch")),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

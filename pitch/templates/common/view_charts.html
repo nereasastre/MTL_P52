@@ -68,6 +68,7 @@
         let refreshRate = bufferSize / audioCtx.sampleRate * 1000;
 
         let pitchBuffer;
+        let finalBuffers =  new Float32Array(3);
         let recorder;
 
         // calculate time axis labels
@@ -162,9 +163,6 @@
             let sab = RingBuffer.getStorageForCapacity(3, Float32Array); // capacity: three float32 values [pitch, confidence, rms]
             let rb = new RingBuffer(sab, Float32Array);
             audioReader = new AudioReader(rb);
-            console.log(audioReader);
-            blob = recorder.getBlob();
-            console.log(blob);
             // pitchNode = new AudioWorkletNode(audioCtx, 'white-noise-processor', {
             //     processorOptions: {
             //         bufferSize: bufferSize,
@@ -197,10 +195,10 @@
         // draw melspectrogram frames
         function animatePitch(timestamp) {
             // if (animationStart === undefined)
-            pitchBuffer = new Float32Array(3);
-            pitchBuffer[0] = 200
-            pitchBuffer[1] = 1
-            pitchBuffer[2] = 1
+            let pitchBuffer = new Float32Array(3);
+            pitchBuffer[0] = finalBuffers[0]
+            pitchBuffer[1] = finalBuffers[1]
+            pitchBuffer[2] = finalBuffers[2]
             animationId = requestAnimationFrame(animatePitch);
             CONFIDENCE_ARRAY.push(pitchBuffer[1]);
             CONFIDENCE_ARRAY.shift();
@@ -256,48 +254,43 @@
         function stopMicRecordStream() {
 
             if (animationId) {
-                cancelAnimationFrame(animationId);
-                drawFullPitchContour();
+                //cancelAnimationFrame(animationId);
+                //drawFullPitchContour();
             }
 
             // const sleep = m => new Promise(r => setTimeout(r, m));
             // await sleep(3000);
 
             recorder.stopRecording(() => {
-                let blob = recorder.getBlob();
-                console.log(blob);
+                blob = recorder.getBlob();
                 let file = new File([blob], 'audio.wav', {
                     type: 'audio',
                     mimeType: 'audio/wav'
                 });
-
-                var formData = new FormData();
-                formData.append('audio', file);
-
-                console.log(formData.get("audio"));
-                // upload "File" object rather than a "Blob"
-                // sendAudioData("{% url 'pitch:audio-process'%}", formData, '{{csrf_token}}')
-                //     .then((data) => {
-                //         console.log(data);
-                //     })
-
+                formData = new FormData();
+                formData.append('record', file);
                 $.ajax({
                     url: "{% url 'pitch:audio-process'%}",
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{csrf_token}}',
-                    },
-                    crossDomain: true,
-                    contentType: 'media-type',
-                    processData: false, //New
+                    headers: { 'X-CSRFToken': '{{csrf_token}}' },
+                    type: 'POST',
                     data: formData,
-                    beforeSend: function () { },
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    contentType: false,
                     success: function (data) {
-                        /**
-                         * set images to #preImage from server
-                         * response
-                         */
-                        console.log("hola?");
+                        console.log("hola?", data);
+                        if(data.success){
+                            console.log("ok");
+                            let pitches = data.pitch
+                            console.log(pitches);
+                            pitches.forEach(pitch => {
+                                finalBuffers[0] = pitch
+                                finalBuffers[1] = 1
+                                finalBuffers[2] = 1
+                                setupAudioGraph()
+                            });
+                            
+                        }
                     },
                     error: function (e) {
                         console.error(e);

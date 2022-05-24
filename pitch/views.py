@@ -1,9 +1,9 @@
 import logging
-from django.contrib import messages
+
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from pitch.models import Record
+from pitch.forms import AudioForm
 
 
 def index_view(request):
@@ -15,17 +15,23 @@ def index_view(request):
         logging.error(f"[REFERRAL_DETAIL_VIEW] - ERROR 500 - {e}")
 
 
-def process(request):
-    print(request.FILES)
-    print(request.POST)
-    if request.method == "POST":
-        audio_file = request.FILES.get("audio")
-        #record = Record.objects.create(voice_record=audio_file)
-        #record.save()
-        #messages.success(request, "Audio recording successfully added!")
-        return JsonResponse(
-            {
-                "pitch": 200,
-                "success": True,
-            }
-        )
+def Audio_store(request):
+    print("request.FILES", request.FILES)
+    if request.method == 'POST':
+        form = AudioForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            form.save()
+            return JsonResponse(
+                {
+                    "pitch": [100, 150, 200, 250, 300, 350, 400, 450, 500],
+                    "success": True,
+                }
+            )
+    else:
+        form = AudioForm()
+    return JsonResponse(
+        {
+            "pitch": [0],
+            "success": False,
+        }
+    )
