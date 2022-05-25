@@ -2,10 +2,7 @@
 
 
 
-
-
-
-
+//function to access the microphone
 function getLocalStream() {
     navigator.mediaDevices.getUserMedia({video: false, audio: true}).then( stream => {
         window.localStream = stream; // A
@@ -15,3 +12,4 @@ function getLocalStream() {
         console.log("u got an error:" + err)
     });
 }
+getLocalStream();
