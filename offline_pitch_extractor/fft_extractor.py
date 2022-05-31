@@ -299,41 +299,6 @@ def stochastic_model_analysis(audio, hop_size, fft_size, stoch_factor):
         p_in += hop_size  # advance sound pointer
     return stoch_env
 
-
-def harmonic_detection(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_freq_prev, sr, harm_dev_slope=0.01):
-    """
-    Detection of the harmonics of a frame from a set of spectral peaks using f0
-    to the ideal harmonic series built on top of a fundamental frequency
-    pfreq, pmag, pphase: peak frequencies, magnitudes and phases
-    f0: fundamental frequency, nH: number of harmonics,
-    hfreqp: harmonic frequencies of previous frame,
-    fs: sampling rate; harmDevSlope: slope of change of the deviation allowed to perfect harmonic
-    returns harm_freq, harm_mag, harm_phase: harmonic frequencies, magnitudes, phases
-    """
-
-    if f0 <= 0:                                                                 # if no f0 return no harmonics
-        return np.zeros(num_harm), np.zeros(num_harm), np.zeros(num_harm)
-    harm_freq = np.zeros(num_harm)                                              # initialize harmonic frequencies
-    harm_mag = np.zeros(num_harm) - 100                                         # initialize harmonic magnitudes
-    harm_phase = np.zeros(num_harm)                                             # initialize harmonic phases
-    harm_f = f0*np.arange(1, num_harm + 1)                                      # initialize harmonic frequencies
-    harm_idx = 0                                                                # initialize harmonic index
-    if not harm_freq_prev:  # if no incoming harmonic tracks initialize to harmonic series
-        harm_freq_prev = harm_f
-    while (f0 > 0) and (harm_idx < num_harm) and (harm_f[harm_idx] < sr / 2):   # find harmonic peaks
-        peak_idx = np.argmin(abs(peak_freq - harm_f[harm_idx]))                 # closest peak
-        dev1 = abs(peak_freq[peak_idx] - harm_f[harm_idx])                      # deviation from perfect harmonic
-        # deviation from previous frame
-        dev2 = (abs(peak_freq[peak_idx] - harm_freq_prev[harm_idx]) if harm_freq_prev[harm_idx] > 0 else sr)
-        threshold = f0 / 3 + harm_dev_slope * peak_freq[peak_idx]
-        if dev1 < threshold or dev2 < threshold:                                # accept peak if deviation is small
-            harm_freq[harm_idx] = peak_freq[peak_idx]                           # harmonic frequencies
-            harm_mag[harm_idx] = peak_mag[peak_idx]                             # harmonic magnitudes
-            harm_phase[harm_idx] = peak_phase[peak_idx]                         # harmonic phases
-        harm_idx += 1                                                           # increase harmonic index
-    return harm_freq, harm_mag, harm_phase
-
-
 def sine_subtraction(x, fft_size, hop_size, sfreq, smag, sphase, fs):
     """
     Subtract sinusoids from a sound
@@ -400,7 +365,7 @@ def stochastic_residual_analysis(x, fft_size, hop_size, sine_freq, sine_mag, sin
         return stoch_env
 
 
-def harmonic_detection_2(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_freq_prev, sr, harm_dev_slope=0.01):
+def harmonic_detection(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_freq_prev, sr, harm_dev_slope=0.01):
     """
     Detection of the harmonics of a frame from a set of spectral peaks using f0
     to the ideal harmonic series built on top of a fundamental frequency
@@ -475,7 +440,7 @@ def harmonic_model_analysis(
         else:
             f0_stable = 0
         harm_freq, harm_mag, harm_phase = \
-            harmonic_detection_2(ip_freq, ip_mag, ip_phase, f0_track, num_harm, harm_freq_prev, sr, harm_dev_slope)
+            harmonic_detection(ip_freq, ip_mag, ip_phase, f0_track, num_harm, harm_freq_prev, sr, harm_dev_slope)
         harm_freq_prev = harm_freq
         if p_in == half_fft_round:  # first frame
             x_harm_freq = np.array([harm_freq])
