@@ -3,7 +3,7 @@ import scipy.io.wavfile
 import time
 
 SAMPLE_FREQ = 44100  # Sampling frequency of the recording
-SAMPLE_DUR = 2  # Duration of the recoding
+SAMPLE_DUR = 5  # Duration of the recoding
 
 print("Grab your guitar!")
 time.sleep(1)   # Gives you a second to grab your guitar ;)

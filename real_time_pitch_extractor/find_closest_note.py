@@ -13,7 +13,7 @@ def find_closest_note(pitch):
     return closest_note, closest_pitch
 
 
-pitch_detected = 442.8
+pitch_detected = 445.8
 closest_note = find_closest_note(pitch_detected)
 print('The closest pitch is: ', closest_note)
 
