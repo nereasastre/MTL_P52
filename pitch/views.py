@@ -5,7 +5,6 @@ import logging
 def index_view(request):
     try:
         template_name = "pitch_extraction.html"
-        pprint("hola mundo")
         context = {}
         return render(request, template_name, context)
     except Exception as e:
