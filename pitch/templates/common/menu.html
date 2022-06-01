@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+*{
+    padding: 5px;
+    margin: 5px;
+
+}
+
+#options{
+    background-color:rgb(224, 238, 242);
+    width: 400px;
+    font-family: verdana;
+    display: flex;
+    flex-direction: column;
+
+}
+
+#instrument,#mode,#input{
+background-color: rgb(166, 243, 223);
+
+}
+
+
+body {
+	background: #efefef;
+  /* background-image: url("static/imgs/fondo.jpg"); */
+}
+
+.box {
+	position: absolute;
+  top: 305px;
+  left: 470px;
+}
+
+.object {
+  display: flex;
+	flex: 0 1 100%;
+  justify-content: center;
+  align-items: center;
+  align-content: stretch;
+}
+
+.outline {
+	width: 25px;
+	height: 25px;
+	border-radius: 50%;
+	border: 8px solid #B5A4A4;
+  animation: pulse 3s;
+	animation-timing-function: ease-out;
+	animation-iteration-count: infinite;
+	position: absolute;
+}
+
+.button {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background: #50CDDD;
+	box-shadow: 0px 0px 80px #0084F9;
+	position: absolute;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+		border: 20px solid #0B3082;
+  }
+  50% {
+		border: solid #A3FFC2;
+		opacity: 0.8;
+  }
+
+	 90% {
+    transform: scale(3.2);
+		opacity: 0.2;
+		border: 3px solid #2E3CFF;
+  }
+  100% {
+    transform: scale(3.3);
+		opacity: 0;
+		border: 1px solid #7A89FF;
+  }
+}
+
+#delayed {
+	animation-delay: 1.5s;
+}
+
+#circlein {
+	width: 5px;
+	height: 5px;
+	border-radius: 25%;
+	background: #6BD6E1;
+	box-shadow: 0px -2px 15px #E0FF94;
+	position: absolute;
+}
+
+.mic-icon {
+	height: 40px;
+	position: absolute;
+	top: -12px;
+	right: -15px;
+
+	margin: 0px;
+}
+
+</style>
+
+<div id="options">
+    <h1 style="color:green;  text-align: center; font-size: 30px; font-family:Verdana, Geneva, Tahoma, sans-serif;">Pitch Monitor</h1>
+
+    <!-- Select for the instruments -->
+    <label for="Intrument"> <h4> Choose a Instrument: </h4> </label>
+    <select name="Intrument" id="instrument">
+        <option value="Guitar">Guitar</option>
+        <option value="Violin">Violin</option>
+        <option value="Flute">Flute</option>
+        <option value="Bass">Bass</option>
+        <option value="Cello">Cello</option>
+        <option value="DoubleBass">DoubleBass</option>
+        <option value="Sax">Sax</option>
+        <option value="Trombone">Trombone</option>
+        <option value="Bass Horn">Bass Horn</option>
+        <option value="Ukulele">Ukulele</option>
+    </select>
+
+    <!-- Select for the Mode -->
+    <label for="Mode"> <h4> Choose a Mode:</h4> </label>
+    <select name="Mode" id="mode">
+        <option value="monitor">Monitor</option>
+        <option value="tunner">Tunner</option>
+        <option value="assesment">Assesment</option>
+
+    </select>
+
+    <span class="bi bi-mic-mute"></span>
+
+    <!-- Select for the Input -->
+    <label for="Input"> <h4>Input:</h4> </label>
+    <select name="Input" id="input">
+        <option title="Micro" value="micro">Default</option>
+        <option value=""></option>
+    </select>
+
+    <div class="box cursor-pointer">
+      <div class="object">
+          <div class="outline"></div>
+          <div class="outline" id="delayed"></div>
+          <div class="button"></div>
+          <div class="button" id="circlein">
+            <svg class="mic-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve" style="fill:#1E2D70">
+                <g><path d="M500,683.8c84.6,0,153.1-68.6,153.1-153.1V163.1C653.1,78.6,584.6,10,500,10c-84.6,0-153.1,68.6-153.1,153.1v367.5C346.9,615.2,415.4,683.8,500,683.8z M714.4,438.8v91.9C714.4,649,618.4,745,500,745c-118.4,0-214.4-96-214.4-214.4v-91.9h-61.3v91.9c0,141.9,107.2,258.7,245,273.9v124.2H346.9V990h306.3v-61.3H530.6V804.5c137.8-15.2,245-132.1,245-273.9v-91.9H714.4z"/></g>
+            </svg>
+          </div>
+      </div>
+    </div>
+
+</div>
+{% endblock %}
