@@ -42,6 +42,7 @@
         // global var for web audio API AudioContext
         let audioCtx;
         let bufferSize = 8192;
+        let mimeType = 'audio/wav';
 
         try {
             AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -68,8 +69,9 @@
         let refreshRate = bufferSize / audioCtx.sampleRate * 1000;
 
         let pitchBuffer;
-        let finalBuffers =  new Float32Array(3);
+        let finalBuffers = new Float32Array(3);
         let recorder;
+        let mediaStream = null
 
         // calculate time axis labels
         function getTimeLabels(n) {
@@ -96,6 +98,73 @@
         function arraySum(total, num) {
             return total + num;
         }
+
+        function recordingRT() {
+
+            // RecordRTC
+            var recordRTC = null;
+
+            var isMimeTypeSupported = (_mimeType) => {
+                // if (webrtcDetectedBrowser === 'edge')  return false;
+
+                if (typeof MediaRecorder.isTypeSupported !== 'function') {
+                    return true;
+                }
+
+                return MediaRecorder.isTypeSupported(_mimeType);
+            };
+
+            var mimeType = 'audio/wav';
+            var recorderType = StereoAudioRecorder;
+
+            if (isMimeTypeSupported(mimeType) === false) {
+                console.log(mimeType, 'is not supported.');
+                mimeType = 'audio/wav';
+
+                if (isMimeTypeSupported(mimeType) === false) {
+                    console.log(mimeType, 'is not supported.');
+                    mimeType = 'audio/wav';
+
+                    if (isMimeTypeSupported(mimeType) === false) {
+                        console.log(mimeType, 'is not supported.');
+
+                        // fallback to WebAudio solution
+                        mimeType = 'audio/wav';
+                        recorderType = StereoAudioRecorder;
+                    }
+                }
+            }
+
+            const rtcSession = {
+                type: 'audio',
+                mimeType: mimeType,
+                recorderType: recorderType,
+                audio: true,
+                video: false,
+                timeSlice: 10,
+                checkForInactiveTracks: true,
+                numberOfAudioChannels: 1,
+                ondataavailable: (blob) => {
+                    //socketio.emit('stream_audio', blob); // sends blob to server
+                    console.log("sent blob", blob)
+                    createWaveFileAndSendToServer(blob)
+                },
+            };
+
+            console.log('final rtcSession object', rtcSession);
+
+            navigator.getUserMedia(rtcSession, (ms) => {
+                // RecordRTC requires "second" parameter named as "options" or "configuration" or "hints"
+                mediaStream = ms.clone()
+                recorder = RecordRTC(mediaStream, rtcSession);
+                recorder.startRecording();
+                startAudioProcessing();
+            }, () => {
+                console.error('An error has occurred while attempting to get user media.');
+            });
+
+        }
+
 
         function resetChartData() {
             rms_pointer = RMS_ARRAY;
@@ -131,18 +200,20 @@
             // } else {
             //     throw "Could not access microphone - getUserMedia not available";
             // }
-            navigator.mediaDevices.getUserMedia({
-                video: false,
-                audio: true
-            }).then(async function (stream) {
-                recorder = RecordRTC(stream, {
-                    type: 'audio',
-                    mimeType: 'audio/wav'
-                });
-                recorder.startRecording();
-                startAudioProcessing()
 
-            });
+            recordingRT()
+            // navigator.mediaDevices.getUserMedia({
+            //     video: false,
+            //     audio: true
+            // }).then(async function (stream) {
+            //     recorder = RecordRTC(stream, {
+            //         type: 'audio/wav',
+            //         mimeType: 'audio/wav'
+            //     });
+            //     recorder.startRecording();
+            //     startAudioProcessing()
+
+            // });
         }
 
 
@@ -251,6 +322,40 @@
             console.info("Full pitch contour should be displaying");
         }
 
+        function createWaveFileAndSendToServer(blob) {
+            let file = new File([blob], 'audio.wav');
+            formData = new FormData();
+            formData.append('record', file);
+            console.log("Send ", formData, "To server");
+            $.ajax({
+                url: "{% url 'pitch:audio-process'%}",
+                headers: { 'X-CSRFToken': '{{csrf_token}}' },
+                type: 'POST',
+                data: formData,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log("hola?", data);
+                    if (data.success) {
+                        console.log("ok");
+                        let pitches = data.pitch
+                        console.log(pitches);
+                        pitches.forEach(pitch => {
+                            finalBuffers[0] = pitch
+                            finalBuffers[1] = 1
+                            finalBuffers[2] = 1
+                            setTimeout(() => { setupAudioGraph(); }, 50000);
+
+                        });
+
+                    }
+                },
+                error: function (e) {
+                    console.error(e);
+                }
+            });
+        }
         function stopMicRecordStream() {
 
             if (animationId) {
@@ -262,40 +367,11 @@
             // await sleep(3000);
 
             recorder.stopRecording(() => {
-                blob = recorder.getBlob();
-                let file = new File([blob], 'audio.wav', {
-                    type: 'audio',
-                    mimeType: 'audio/wav'
-                });
-                formData = new FormData();
-                formData.append('record', file);
-                $.ajax({
-                    url: "{% url 'pitch:audio-process'%}",
-                    headers: { 'X-CSRFToken': '{{csrf_token}}' },
-                    type: 'POST',
-                    data: formData,
-                    enctype: 'multipart/form-data',
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        console.log("hola?", data);
-                        if(data.success){
-                            console.log("ok");
-                            let pitches = data.pitch
-                            console.log(pitches);
-                            pitches.forEach(pitch => {
-                                finalBuffers[0] = pitch
-                                finalBuffers[1] = 1
-                                finalBuffers[2] = 1
-                                setupAudioGraph()
-                            });
-                            
-                        }
-                    },
-                    error: function (e) {
-                        console.error(e);
-                    }
-                });
+                console.log("Stop recording!");
+                mediaStream.stop();
+                //console.log(recorder.save("test"));
+                //let blob = recorder.getBlob();
+                //createWaveFileAndSendToServer(blob);
                 //invokeSaveAsDialog(blob, 'audio.wav');
             });
 
@@ -306,21 +382,25 @@
             //     gumStream.removeTrack(track);
             // });
 
-            audioCtx.close().then(function () {
-                // manage button state
-                $("#recordButton").removeClass("recording");
-                $("#recordButton").html('Mic &nbsp;&nbsp;<i class="microphone icon"></i>');
+            $("#recordButton").removeClass("recording");
+            $("#recordButton").html('Mic &nbsp;&nbsp;<i class="microphone icon"></i>');
 
-                // disconnect nodes
-                // mic.disconnect();
-                // pitchNode.disconnect();
-                // gain.disconnect();
-                mic = undefined;
-                pitchNode = undefined;
-                gain = undefined;
 
-                console.log("Stopped recording ...");
-            });
+            // audioCtx.close().then(function () {
+            //     // manage button state
+            //     $("#recordButton").removeClass("recording");
+            //     $("#recordButton").html('Mic &nbsp;&nbsp;<i class="microphone icon"></i>');
+
+            //     // disconnect nodes
+            //     // mic.disconnect();
+            //     // pitchNode.disconnect();
+            //     // gain.disconnect();
+            //     mic = undefined;
+            //     pitchNode = undefined;
+            //     gain = undefined;
+
+            //     console.log("Stopped recording ...");
+            // });
         }
 
         $(document).ready(function () {
