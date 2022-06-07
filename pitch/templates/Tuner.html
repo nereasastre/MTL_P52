@@ -1,24 +1,43 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
+<div class="content">
+  <div style="margin: 1px auto 16px auto">
+    <ins
+      class="adsbygoogle"
+      style="display: block"
+      data-ad-client="ca-pub-9936013463984426"
+      data-ad-slot="7033542324"
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    ></ins>
+  </div>
+  <div id="tunerframe" style="min-height: 280px; margin-bottom: 45px">
+    <div
+      id="tunerback"
+      style="width: 450px; height: 414px; margin-bottom: 36px"
+    >
+      <canvas
+        id="tunercanvas"
+        width="562"
+        height="562"
+        style="width: 450px; height: 450px"
+      ></canvas>
+    </div>
+  </div>
 
-{% block content %}
-
-<div id="tunerframe" style="min-height: 280px; margin-bottom: 45px;">
-    <canvas id="tunercanvas" width="562" height="562" style="width: 450px; height: 450px;"></canvas>
-    <div id="tunerback" style="width: 450px; height: 414px; margin-bottom: 36px;"></div>
+  <!-- <script>
+    (function (d, e) {
+      var t = d.createElement("script");
+      (t.type = "text/javascript"), (t.async = !0), (t.src = e);
+      var n = d.getElementsByTagName("script")[0];
+      n.parentNode.insertBefore(t, n);
+    })(
+      document,
+      "https://core.tuner-online.com/functions16.js?r=" +
+        Math.floor(Math.random() * 10000000).toString() +
+        ""
+    );
+  </script> -->
 </div>
+  {% endblock %}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% endblock %}

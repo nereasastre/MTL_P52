@@ -4,7 +4,7 @@ import logging
 
 def index_view(request):
     try:
-        template_name = "design1.html"
+        template_name = "Tuner.html"
         context = {}
         return render(request, template_name, context)
     except Exception as e:
