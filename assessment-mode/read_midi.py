@@ -43,7 +43,7 @@ def list_number_to_list_note(midi_notes, note_off=False):
             number: the MIDI number to convert to note (A-G)
 
         Returns:
-            A tuple containing the note (A-G) and octave
+            A string containing the note (A-G) and octave
             TODO do we want this as a single string? I feel like having it as a separate thing might make more sense
         """
         # nerea: added a -1 because we were an octave off, TODO check this does not give us problems in the future
@@ -52,7 +52,7 @@ def list_number_to_list_note(midi_notes, note_off=False):
         assert 0 <= number <= 127, errors['notes']
         note = NOTES[number % NOTES_IN_OCTAVE]
 
-        return note, octave
+        return note + str(octave)
 
     notes_list = []
     for note_event in midi_notes:
@@ -83,7 +83,7 @@ def midi_info(file_name):
 
     # Put all note on/off in midi note as dictionary.
     for i in mid:
-        if i.type == 'note_on' or i.type == 'time_signature':
+        if i.type == 'note_on' or i.type == 'note-off' or i.type == 'time_signature':
             midi_dict.append(i.dict())
 
     mem1 = 0
@@ -118,6 +118,29 @@ def midi_info(file_name):
     return output
 
 
+def get_tempo(file_name):
+    """
+    Returns tempo in milliseconds per tick
+    Args:
+        file_name (str): The file from which we want to extract tempo
+
+    Returns:
+        The tempo in milliseconds per tick
+
+    """
+    mid = read_midi(file_name)
+    for track in mid:
+        if track.type == 'set_tempo':
+            return track.tempo
+    else:
+        # Default tempo.
+        return 500000
+
+
 output = midi_info('twinkle_twinkle.mid')
-print(output)
+print("Tempo: ", get_tempo('twinkle_twinkle.mid'))
+
+for event in output:
+    print(event)
+
 print(list_number_to_list_note(output))
