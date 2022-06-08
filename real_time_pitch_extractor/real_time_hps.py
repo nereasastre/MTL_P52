@@ -5,8 +5,8 @@ import sounddevice as sd
 import hps_extractor as hpse
 
 # General settings that can be changed by the user
-fs = 48000  # sample frequency in Hz
-window_size = 48000  # window size of the DFT in samples
+sr = 41000  # sample frequency in Hz
+window_size = 41000  # window size of the DFT in samples
 window_step = 12000  # step size of window
 
 
@@ -47,7 +47,7 @@ def callback(indata, frames, time, status):
 
 try:
     print("Starting HPS guitar tuner...")
-    with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=fs):
+    with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=sr):
         while True:
             time.sleep(0.5)
 except Exception as e:
