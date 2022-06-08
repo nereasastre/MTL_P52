@@ -29,9 +29,7 @@ def callback(indata, frames, time, status):
         callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0]))  # append new samples
         callback.window_samples = callback.window_samples[len(indata[:, 0]):]  # remove old samples
 
-        pitch_detected = hpse.hps_pitch_detector(callback.window_samples)           # extract pitch
-
-        closest_pitch, closest_note, pitch_diff = UF.find_closest_note(pitch_detected)  # find closest note
+        pitch_detected, closest_pitch, closest_note, pitch_diff = hpse.hps_pitch_detector(callback.window_samples)           # extract pitch
         pitch_diff = round(pitch_diff, 1)
         callback.noteBuffer.insert(0, closest_note)  # note that this is a ringbuffer
         callback.noteBuffer.pop()
