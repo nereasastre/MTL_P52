@@ -20,15 +20,15 @@ hanning_window = np.hanning(window_size)
 # Harmonic Product Spectrum (HPS) pitch detector
 
 
-def hps_pitch_detector(window_samples):
+def hps_pitch_detector(audio):
     # skip if signal power is too low
-    signal_power = (np.linalg.norm(window_samples, ord=2) ** 2) / len(window_samples)
+    signal_power = (np.linalg.norm(audio, ord=2) ** 2) / len(audio)
     if signal_power < power_th:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("Closest note: ...")
 
     # avoid spectral leakage by multiplying the signal with a hanning window
-    hanning_samples = window_samples * hanning_window
+    hanning_samples = audio * hanning_window
     magnitude_spec = abs(scipy.fftpack.fft(hanning_samples)[:len(hanning_samples) // 2])
 
     # supress mains hum, set everything below 62Hz to zero
