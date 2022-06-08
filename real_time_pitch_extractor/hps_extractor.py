@@ -5,8 +5,8 @@ import copy
 
 from real_time_pitch_extractor.util_functions import find_closest_note
 
-sr = 41000  # sample frequency in Hz
-window_size = 41000  # window size of the DFT in samples
+sr = 44100  # sample frequency in Hz
+window_size = 44100  # window size of the DFT in samples
 
 num_hps = 5  # max number of harmonic product spectrums
 power_th = 1e-6  # tuning is activated if the signal power exceeds this threshold
