@@ -5,8 +5,8 @@ import sounddevice as sd
 import hps_extractor as hpse
 
 # General settings that can be changed by the user
-sr = 41000  # sample frequency in Hz
-window_size = 41000  # window size of the DFT in samples
+sr = 44100  # sample frequency in Hz
+window_size = 44100  # window size of the DFT in samples
 window_step = 12000  # step size of window
 
 
