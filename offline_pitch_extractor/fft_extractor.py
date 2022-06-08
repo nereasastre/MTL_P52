@@ -8,14 +8,25 @@ tol = 1e-14
 
 
 def is_power2(n):
+    """
+    Finds if a number is power of 2.
+    Args:
+        n: number to analyse (int)
+
+    Returns: true if n is power of 2 or false if not.
+    """
     return math.ceil(np.log2(n)) == math.floor(np.log2(n))
 
 
 def peak_detection(x_mag, th):
     """
     Detect spectral peak locations
-    mX: magnitude spectrum, t: threshold
-    returns peak_loc: peak locations
+    Args:
+        x_mag: magnitude spectrum (array of float)
+        th: threshold (float)
+
+    Returns:
+        peak_loc: peak locations (array of float)
     """
 
     thresh = np.where(np.greater(x_mag[1:-1], th), x_mag[1:-1], 0)      # locations above threshold
@@ -29,9 +40,12 @@ def peak_detection(x_mag, th):
 def cleaning_sine_tracks(track_freq, min_track_length=3):
     """
     Delete short fragments of a collection of sinusoidal tracks
-    tfreq: frequency of tracks
-    minTrackLength: minimum duration of tracks in number of frames
-    returns tfreqn: output frequency of tracks
+    Args:
+        track_freq: frequency of tracks (array of float)
+        min_track_length: minimum duration of tracks in number of frames (int)
+
+    Returns:
+        track_freq: output frequency of tracks (array of float)
     """
 
     if track_freq.shape[1] == 0:                                   # if no tracks return input
@@ -45,7 +59,7 @@ def cleaning_sine_tracks(track_freq, min_track_length=3):
         if track_freqs[0] > 0:
             track_begs = np.insert(track_begs, 0, 0)
         track_ends = np.nonzero((track_freqs[:n_frames-1] > 0)     # end of track contours
-                                & (track_freqs[1:] <=0))[0] + 1
+                                & (track_freqs[1:] <= 0))[0] + 1
         if track_freqs[n_frames-1] > 0:
             track_ends = np.append(track_ends, n_frames-1)
         track_lengths = 1 + track_ends - track_begs                # lengths of track contours
@@ -59,11 +73,18 @@ def f0_twm(peak_freq, peak_mag, max_error_f0, min_f0, max_f0, f0_th=0):
     """
     Function that wraps the f0 detection function TWM, selecting the possible f0 candidates
     and calling the function TWM with them
-    peak_freq, pmag: peak frequencies and magnitudes,
-    max_error_f0: maximum error allowed, min_f0, max_f0: minimum  and maximum f0
-    f0t: f0 of previous frame if stable
-    returns f0: fundamental frequency in Hz
+    Args:
+        peak_freq: peak frequencies (array of float)
+        peak_mag: peak magnitudes (array of float)
+        max_error_f0: maximum error allowed (float)
+        min_f0: minimum f0 (float)
+        max_f0: maximum f0 (float)
+        f0_th: f0 of previous frame if stable (float)
+
+    Returns:
+        f0: fundamental frequency in Hz (float)
     """
+
     if min_f0 < 0:
         raise ValueError(f"Minimum fundamental frequency min_f0={min_f0} smaller than 0")
 
@@ -104,11 +125,16 @@ def f0_twm(peak_freq, peak_mag, max_error_f0, min_f0, max_f0, f0_th=0):
 def twm_peaks(peak_freq, peak_mag, f0_cand):
     """
     Two-way mismatch algorithm for f0 detection (by Beauchamp&Maher)
-    [better to use the C version of this function: UF_C.twm]
-    pfreq, pmag: peak frequencies in Hz and magnitudes,
-    f0c: frequencies of f0 candidates
-    returns f0, f0Error: fundamental frequency detected and its error
+    Args:
+        peak_freq: peak frequencies in Hz (array of float)
+        peak_mag: peak magnitudes (array of float)
+        f0_cand: frequencies of f0 candidates (array of float)
+
+    Returns:
+        f0: fundamental frequency detected (float)
+        f0Error: fundamental frequency error (float)
     """
+
     p = 0.5                                                 # weighting by frequency value
     q = 1.4                                                 # weighting related to magnitude of peaks
     r = 0.5                                                 # scaling related to magnitude of peaks
@@ -150,8 +176,15 @@ def twm_peaks(peak_freq, peak_mag, f0_cand):
 def peak_interp(mag_x, phase_x, peak_loc):
     """
     Interpolate peak values using parabolic interpolation
-    mX, pX: magnitude and phase spectrum, ploc: locations of peaks
-    returns ip_loc, ip_mag, ip_phase: interpolated peak location, magnitude and phase values
+    Args:
+        mag_x: magnitude spectrum
+        phase_x: phase spectrum
+        peak_loc: locations of peaks
+
+    Returns:
+        ip_loc: interpolated peak location values
+        ip_mag: interpolated peak magnitude values
+        ip_phase: interpolated peak phase values
     """
 
     val = mag_x[peak_loc]                                              # magnitude of peak bin
@@ -163,11 +196,17 @@ def peak_interp(mag_x, phase_x, peak_loc):
     return ip_loc, ip_mag, ip_phase
 
 
-def dft_analysis(audio, w, fft_size):
+def dft_analysis(x, w, fft_size):
     """
     Analysis of a signal using the discrete Fourier transform
-    x: input signal, w: analysis window, N: FFT size
-    returns mag_audio_fft, phase_audio_fft: magnitude and phase spectrum
+    Args:
+        x: input signal (array of float)
+        w: analysis window (array of float)
+        fft_size: size of the complex spectrum to gemerate (int)
+
+    Returns:
+        mag_audio_fft: magnitude spectrum
+        phase_audio_fft: phase spectrum
     """
 
     if not is_power2(fft_size):
@@ -181,7 +220,7 @@ def dft_analysis(audio, w, fft_size):
     half_window_floor = w.size//2                           # half analysis window size by floor
     fft_buffer = np.zeros(fft_size)                         # initialize buffer for FFT
     w = w / sum(w)                                          # normalize analysis window
-    audio_w = audio * w                                     # window the input sound
+    audio_w = x * w                                     # window the input sound
     fft_buffer[:half_window_round] = audio_w[half_window_floor:]  # zero-phase window in fft_buffer
     fft_buffer[-half_window_floor:] = audio_w[:half_window_floor]
     audio_fft = fft(fft_buffer)
@@ -200,8 +239,12 @@ def dft_analysis(audio, w, fft_size):
 def sinc(x, fft_size):
     """
     Generate the main lobe of a sinc function (Dirichlet kernel)
-    x: array of indexes to compute; N: size of FFT to simulate
-    returns y: samples of the main lobe of a sinc function
+    Args:
+        x: array of indexes to compute (array of int)
+        fft_size: size of the complex spectrum to simulate (int)
+
+    Returns:
+        y: samples of the main lobe of a sinc function (array of float)
     """
 
     y = np.sin(fft_size * x / 2) / np.sin(x / 2)              # compute the sinc function
@@ -212,8 +255,11 @@ def sinc(x, fft_size):
 def gen_bh_lobe(x):
     """
     Generate the main lobe of a Blackman-Harris window
-    x: bin positions to compute (real values)
-    returns y: main lobe os spectrum of a Blackman-Harris window
+    Args:
+        x: bin positions to compute (real values) (array of float)
+
+    Returns:
+        y: main lobe of spectrum of a Blackman-Harris window (array of float)
     """
 
     fft_size = 512                                                            # size of fft to use
@@ -227,18 +273,24 @@ def gen_bh_lobe(x):
     return y
 
 
-def gen_spec_sines(ip_freq, ip_mag, ip_phase, fft_size, sr):
+def gen_spec_sines(ip_loc, ip_mag, ip_phase, fft_size, sr=44100):
     """
-    Generate a spectrum from a series of sine values
-    iploc, ipmag, ipphase: sine peaks locations, magnitudes and phases
-    N: size of the complex spectrum to generate; fs: sampling rate
-    returns output_spectrum: generated complex spectrum of sines
+    Generates a spectrum with sines on peaks.
+    Args:
+        ip_loc: sine peaks locations (array of int)
+        ip_mag: sine peaks magnitudes (array of float)
+        ip_phase: sine peaks phases (array of float)
+        fft_size: size of the complex spectrum to generate (int)
+        sr: sampling rate (int)
+
+    Returns:
+        output_spectrum: generated complex spectrum of sines (array of float)
     """
 
     output_spectrum = np.zeros(fft_size, dtype=complex)        # initialize output complex spectrum
     half_fft_size = fft_size // 2                              # size of positive freq. spectrum
-    for i in range(0, ip_freq.size):                           # generate all sine spectral lobes
-        loc = fft_size * ip_freq[i] / sr                       # it should be in range ]0,half_fft_size-1[
+    for i in range(0, ip_loc.size):                           # generate all sine spectral lobes
+        loc = fft_size * ip_loc[i] / sr                       # it should be in range ]0,half_fft_size-1[
         if loc == 0 or loc > half_fft_size-1:
             continue
         bin_remainder = round(loc)-loc
@@ -259,12 +311,17 @@ def gen_spec_sines(ip_freq, ip_mag, ip_phase, fft_size, sr):
     return output_spectrum
 
 
-def stochastic_model_analysis(audio, hop_size, fft_size, stoch_factor):
+def stochastic_model_analysis(audio, fft_size, hop_size, stoch_factor):
     """
     Stochastic analysis of a sound
-    x: input array sound, H: hop size, N: fftsize
-    stocf: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1
-    returns stoch_env: stochastic envelope
+    Args:
+        audio: input sound (array of float)
+        fft_size: size of the complex spectrum to generate (int)
+        hop_size: hop-size (int)
+        stoch_factor: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1 (float)
+
+    Returns:
+        stoch_env: stochastic envelope (array of float)
     """
 
     pos_fft_size = fft_size // 2 + 1  # positive size of fft
@@ -286,6 +343,7 @@ def stochastic_model_analysis(audio, hop_size, fft_size, stoch_factor):
     audio = np.append(audio, np.zeros(half_fft_size))  # add zeros at the end to analyze last sample
     p_in = half_fft_size  # initialize sound pointer in middle of analysis window
     p_end = audio.size - half_fft_size  # last sample to start a frame
+    stoch_env = None
     while p_in <= p_end:
         xw = audio[p_in - half_fft_size:p_in + half_fft_size] * w  # window the input sound
         audio_fft = fft(xw)  # compute FFT
@@ -300,83 +358,70 @@ def stochastic_model_analysis(audio, hop_size, fft_size, stoch_factor):
     return stoch_env
 
 
-def harmonic_detection(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_freq_prev, sr, harm_dev_slope=0.01):
-    """
-    Detection of the harmonics of a frame from a set of spectral peaks using f0
-    to the ideal harmonic series built on top of a fundamental frequency
-    pfreq, pmag, pphase: peak frequencies, magnitudes and phases
-    f0: fundamental frequency, nH: number of harmonics,
-    hfreqp: harmonic frequencies of previous frame,
-    fs: sampling rate; harmDevSlope: slope of change of the deviation allowed to perfect harmonic
-    returns harm_freq, harm_mag, harm_phase: harmonic frequencies, magnitudes, phases
-    """
-
-    if f0 <= 0:                                                                 # if no f0 return no harmonics
-        return np.zeros(num_harm), np.zeros(num_harm), np.zeros(num_harm)
-    harm_freq = np.zeros(num_harm)                                              # initialize harmonic frequencies
-    harm_mag = np.zeros(num_harm) - 100                                         # initialize harmonic magnitudes
-    harm_phase = np.zeros(num_harm)                                             # initialize harmonic phases
-    harm_f = f0*np.arange(1, num_harm + 1)                                      # initialize harmonic frequencies
-    harm_idx = 0                                                                # initialize harmonic index
-    if not harm_freq_prev:  # if no incoming harmonic tracks initialize to harmonic series
-        harm_freq_prev = harm_f
-    while (f0 > 0) and (harm_idx < num_harm) and (harm_f[harm_idx] < sr / 2):   # find harmonic peaks
-        peak_idx = np.argmin(abs(peak_freq - harm_f[harm_idx]))                 # closest peak
-        dev1 = abs(peak_freq[peak_idx] - harm_f[harm_idx])                      # deviation from perfect harmonic
-        # deviation from previous frame
-        dev2 = (abs(peak_freq[peak_idx] - harm_freq_prev[harm_idx]) if harm_freq_prev[harm_idx] > 0 else sr)
-        threshold = f0 / 3 + harm_dev_slope * peak_freq[peak_idx]
-        if dev1 < threshold or dev2 < threshold:                                # accept peak if deviation is small
-            harm_freq[harm_idx] = peak_freq[peak_idx]                           # harmonic frequencies
-            harm_mag[harm_idx] = peak_mag[peak_idx]                             # harmonic magnitudes
-            harm_phase[harm_idx] = peak_phase[peak_idx]                         # harmonic phases
-        harm_idx += 1                                                           # increase harmonic index
-    return harm_freq, harm_mag, harm_phase
-
-
-def sine_subtraction(x, fft_size, hop_size, sfreq, smag, sphase, fs):
+def sine_subtraction(x, fft_size, hop_size, sfreq, smag, sphase, sr):
     """
     Subtract sinusoids from a sound
-    x: input sound, N: fft-size, H: hop-size
-    sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
-    returns xr: residual sound
+    Args:
+        x: input sound (array of float)
+        fft_size: size of the complex spectrum to generate (int)
+        hop_size: hop-size (int)
+        sfreq: sinusoidal frequencies (array of float)
+        smag: sinusoidal magnitudes (array of float)
+        sphase: sinusoidal phases (array of float)
+        sr: sampling rate (int)
+
+    Returns:
+        xr: residual sound (array of float)
+
     """
 
-    hN = fft_size // 2                                          # half of fft size
-    x = np.append(np.zeros(hN),x)                      # add zeros at beginning to center first window at sample 0
-    x = np.append(x, np.zeros(hN))                      # add zeros at the end to analyze last sample
+    half_fft_size = fft_size // 2                                          # half of fft size
+    x = np.append(np.zeros(half_fft_size), x)               # add zeros at beginning to center first window at sample 0
+    x = np.append(x, np.zeros(half_fft_size))                      # add zeros at the end to analyze last sample
     bh = signal.windows.blackmanharris(fft_size)                            # blackman harris window
-    w = bh/ sum(bh)                                    # normalize window
+    w = bh / sum(bh)                                    # normalize window
     sw = np.zeros(fft_size)                                   # initialize synthesis window
-    sw[hN - hop_size:hN + hop_size] = signal.windows.triang(2 * hop_size) / w[hN - hop_size:hN + hop_size]         # synthesis window
-    L = sfreq.shape[0]                                 # number of frames, this works if no sines
+    # synthesis window
+    sw[half_fft_size - hop_size:half_fft_size + hop_size] = \
+        signal.windows.triang(2 * hop_size) / w[half_fft_size - hop_size:half_fft_size + hop_size]
+    num_frames = sfreq.shape[0]                                 # number of frames, this works if no sines
     xr = np.zeros(x.size)                              # initialize output array
     pin = 0
-    for l in range(L):
+    for frame in range(num_frames):
         xw = x[pin:pin + fft_size] * w                              # window the input sound
-        X = fft(fftshift(xw))                            # compute FFT
-        Yh = gen_spec_sines(fft_size * sfreq[l, :] / fs, smag[l, :], sphase[l, :], fft_size, fs)   # generate spec sines
-        Xr = X-Yh                                        # subtract sines from original spectrum
-        xrw = np.real(fftshift(ifft(Xr)))                # inverse FFT
+        spectrum = fft(fftshift(xw))                            # compute FFT
+        # generate spec sines
+        generated_sines = gen_spec_sines(
+            fft_size * sfreq[frame, :] / sr, smag[frame, :], sphase[frame, :], fft_size, sr)
+        cleaned_spectrum = spectrum-generated_sines                            # subtract sines from original spectrum
+        xrw = np.real(fftshift(ifft(cleaned_spectrum)))                # inverse FFT
         xr[pin:pin + fft_size] += xrw * sw                          # overlap-add
         pin += hop_size                                         # advance sound pointer
-    xr = np.delete(xr, range(hN))                      # delete half of first window which was added in stftAnal
-    xr = np.delete(xr, range(xr.size-hN, xr.size))     # delete half of last window which was added in stftAnal
+    xr = np.delete(xr, range(half_fft_size))                  # delete half of first window which was added in stftAnal
+    xr = np.delete(xr, range(xr.size-half_fft_size, xr.size))  # delete half of last window which was added in stftAnal
     return xr
 
 
-def stochastic_residual_analysis(x, fft_size, hop_size, sine_freq, sine_mag, sine_phase, sr, stoch_factor):
+def stochastic_residual_analysis(x, fft_size, hop_size, sine_freq, sine_mag, sine_phases, sr, stoch_factor):
     """
-    Subtract sinusoids from a sound and approximate the residual with an envelope
-    x: input sound, N: fft size, H: hop-size
-    sfreq, smag, sphase: sinusoidal frequencies, magnitudes and phases
-    fs: sampling rate; stocf: stochastic factor, used in the approximation
-    returns stoch_env: stochastic approximation of residual
+    Subtract sinusoids from a sound and approximate the residual with an envelope   
+    Args:
+        x: input sound (array of float)
+        fft_size: size of the complex spectrum to generate (int)
+        hop_size: hop-size (int)
+        sine_freq: sinusoidal frequencies (array of float)
+        sine_mag: sinusoidal magnitudes (array of float)
+        sine_phases: sinusoidal phases (array of float)
+        sr: sampling rate (int)
+        stoch_factor: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1 (float)
+
+    Returns:
+        stoch_env: stochastic approximation of residual (array of float)
     """
 
     half_fft_size = fft_size // 2
-    x = np.append(np.zeros(half_fft_size),x)               # add zeros at beginning to center first window at sample 0
-    x = np.append(x,np.zeros(half_fft_size))               # add zeros at the end to analyze last sample
+    x = np.append(np.zeros(half_fft_size), x)               # add zeros at beginning to center first window at sample 0
+    x = np.append(x, np.zeros(half_fft_size))               # add zeros at the end to analyze last sample
     w = signal.windows.blackmanharris(fft_size)            # synthesis window
     w = w / sum(w)                                         # normalize synthesis window
     num_frames = sine_freq.shape[0]                        # number of frames, this works if no sines
@@ -386,7 +431,7 @@ def stochastic_residual_analysis(x, fft_size, hop_size, sine_freq, sine_mag, sin
         x_fft = fft(fftshift(xw))
 
         # generate spec sines
-        y_harm = gen_spec_sines(fft_size * sine_freq[frame, :] / sr, sine_mag[frame, :], sine_phase[frame, :], fft_size)
+        y_harm = gen_spec_sines(fft_size * sine_freq[frame, :]/sr, sine_mag[frame, :], sine_phases[frame, :], fft_size)
         x_fft_res = x_fft-y_harm                            # subtract sines from original spectrum
         x_fft_res_mag = 20*np.log10(abs(x_fft_res[:half_fft_size]))
         # decimate the mag spectrum
@@ -400,15 +445,24 @@ def stochastic_residual_analysis(x, fft_size, hop_size, sine_freq, sine_mag, sin
         return stoch_env
 
 
-def harmonic_detection_2(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_freq_prev, sr, harm_dev_slope=0.01):
+def harmonic_detection(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_freq_prev, sr, harm_dev_slope=0.01):
     """
     Detection of the harmonics of a frame from a set of spectral peaks using f0
     to the ideal harmonic series built on top of a fundamental frequency
-    pfreq, pmag, pphase: peak frequencies, magnitudes and phases
-    f0: fundamental frequency, nH: number of harmonics,
-    hfreqp: harmonic frequencies of previous frame,
-    fs: sampling rate; harmDevSlope: slope of change of the deviation allowed to perfect harmonic
-    returns harm_freqs, harm_mag, harm_phase: harmonic frequencies, magnitudes, phases
+    Args:
+        peak_freq: peak frequencies (array of float)
+        peak_mag: peak magnitudes (array of float)
+        peak_phase: peak phases (array of float)
+        f0: fundamental frequency (float)
+        num_harm: maximum number of harmonics (int)
+        harm_freq_prev: harmonic frequencies of previous frame (array of float)
+        sr: sampling rate (int)
+        harm_dev_slope: slope of change of the deviation allowed to perfect harmonic (float)
+
+    Returns:
+        harm_freqs: harmonic frequencies
+        harm_mag: harmonic magnitudes
+        harm_phase: harmonic phases
     """
 
     if f0 <= 0:  # if no f0 return no harmonics
@@ -426,7 +480,8 @@ def harmonic_detection_2(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_fre
     while (f0 > 0) and (harm_idx < num_harm) and (harm_freq[harm_idx] < sr / 2):          # find harmonic peaks
         pei = np.argmin(abs(peak_freq - harm_freq[harm_idx]))               # closest peak
         dev1 = abs(peak_freq[pei] - harm_freq[harm_idx])                    # deviation from perfect harmonic
-        dev2 = (abs(peak_freq[pei] - harm_freq_prev[harm_idx]) if harm_freq_prev[harm_idx] > 0 else sr) # deviation from previous frame
+        # deviation from previous frame
+        dev2 = (abs(peak_freq[pei] - harm_freq_prev[harm_idx]) if harm_freq_prev[harm_idx] > 0 else sr)
         threshold = f0 / 3 + harm_dev_slope * peak_freq[pei]
 
         if dev1 < threshold or dev2 < threshold:         # accept peak if deviation is small
@@ -441,18 +496,31 @@ def harmonic_detection_2(peak_freq, peak_mag, peak_phase, f0, num_harm, harm_fre
 def harmonic_model_analysis(
         x, sr, w, fft_size, hop_size, th, num_harm, min_f0, max_f0, f0_eth, harm_dev_slope=0.01, min_sine_dur=.02):
     """
-    Analysis of a sound using the sinusoidal harmonic model
-    x: input sound; fs: sampling rate, w: analysis window; N: FFT size (minimum 512); t: threshold in negative dB,
-    nH: maximum number of harmonics;  minf0: minimum f0 frequency in Hz,
-    maxf0: maximim f0 frequency in Hz; f0et: error threshold in the f0 detection (ex: 5),
-    harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
-    returns xhfreq, x_harm_mag, xhphase: harmonic frequencies, magnitudes and phases
+    Analysis of a sound using the sinusoidal harmonic model.
+    Args:
+        x: input sound (array of float)
+        sr: sampling rate (int)
+        w: analysis window (array of float)
+        fft_size: size of the complex spectrum to generate (minimum 512) (int)
+        hop_size: hop size (int)
+        th: threshold in negative dB (float)
+        num_harm: maximum number of harmonics (int)
+        min_f0: minimum f0 frequency in Hz (float)
+        max_f0: maximum f0 frequency in Hz (float)
+        f0_eth: error threshold in the f0 detection (ex: 5) (float)
+        harm_dev_slope: slope of harmonic deviation (float)
+        min_sine_dur: minimum length of harmonics (float)
+
+    Returns:
+        x_harm_freq: harmonic frequencies
+        x_harm_mag: harmonic magnitudes
+        x_harm_phase: harmonic phases
     """
 
     if min_sine_dur < 0:  # raise exception if minSineDur is smaller than 0
         raise ValueError("Minimum duration of sine tracks smaller than 0")
 
-    pos_fft_size = fft_size // 2  # size of positive spectrum
+    # pos_fft_size = fft_size // 2  # size of positive spectrum
     half_fft_round = int(math.floor((w.size + 1) / 2))  # half analysis window size by rounding
     half_fft_floor = int(math.floor(w.size / 2))  # half analysis window size by floor
     x = np.append(np.zeros(half_fft_floor), x)  # add zeros at beginning to center first window at sample 0
@@ -462,6 +530,7 @@ def harmonic_model_analysis(
     w = w / sum(w)  # normalize analysis window
     harm_freq_prev = []  # initialize harmonic frequencies of previous frame
     f0_stable = 0  # initialize f0 stable
+    x_harm_freq = x_harm_mag = x_harm_phase = None
     while p_in <= p_end:
         frame = x[p_in - half_fft_round:p_in + half_fft_floor]  # select frame
         mag_fft, phase_fft = dft_analysis(frame, w, fft_size)  # compute dft
@@ -475,7 +544,7 @@ def harmonic_model_analysis(
         else:
             f0_stable = 0
         harm_freq, harm_mag, harm_phase = \
-            harmonic_detection_2(ip_freq, ip_mag, ip_phase, f0_track, num_harm, harm_freq_prev, sr, harm_dev_slope)
+            harmonic_detection(ip_freq, ip_mag, ip_phase, f0_track, num_harm, harm_freq_prev, sr, harm_dev_slope)
         harm_freq_prev = harm_freq
         if p_in == half_fft_round:  # first frame
             x_harm_freq = np.array([harm_freq])
@@ -492,38 +561,42 @@ def harmonic_model_analysis(
 
 
 def fft_extractor(
-        audio, sr=44100, w_size=2001, hop_size=2 * 256, th=-90, num_harm=5, min_f0=50, max_f0=1500, f0_eth=2,
+        x, sr=44100, w_size=2001, hop_size=512, th=-90, num_harm=5, min_f0=50, max_f0=1500, f0_eth=2,
         harm_dev_slope=0.01, min_sine_dur=0.01, num_sines=2048, stoch_factor=0.3):
     """
-    Extracts the fundamental frequency given an input sound using the FFT method.
+    Analysis of a sound using the harmonic plus stochastic model
     Args:
-        audio: the input sound (list of float)
+        x: the input sound (list of float)
         sr: the sampling rate (int)
+        w_size: size of the window to use for the analysis (int)
+        hop_size: hop size (int)
+        th: threshold in negative dB (float)
+        num_harm: maximum number of harmonics (int)
+        min_f0: minimum f0 frequency in Hz (float)
+        max_f0: maximum f0 frequency in Hz (float)
+        f0_eth: error threshold in the f0 detection (ex: 5) (float)
+        harm_dev_slope: slope of harmonic deviation (float)
+        min_sine_dur: minimum length of harmonics (float)
+        num_sines: number of sines to subtract (int)
+        stoch_factor: decimation factor of mag spectrum for stochastic analysis, bigger than 0, maximum of 1 (float)
     Returns:
         freq: the estimated fundamental frequency (float)
     """
-    """
-    Analysis of a sound using the harmonic plus stochastic model
-    x: input sound, fs: sampling rate, w: analysis window; fft_size: FFT size, t: threshold in negative dB, 
-    nH: maximum number of harmonics, minf0: minimum f0 frequency in Hz, 
-    maxf0: maximim f0 frequency in Hz; f0et: error threshold in the f0 detection (ex: 5),
-    harmDevSlope: slope of harmonic deviation; minSineDur: minimum length of harmonics
-    returns hfreq, h_mag, h_phase: harmonic frequencies, magnitude and phases; stoch_env: stochastic residual
-    """
+
     fft_size = int(2 ** np.ceil(np.log2(w_size)))
     w = signal.windows.blackmanharris(w_size)
 
     # perform harmonic analysis
     h_freq, h_mag, h_phase = \
-        harmonic_model_analysis(audio, sr, w, fft_size, hop_size, th, num_harm,
+        harmonic_model_analysis(x, sr, w, fft_size, hop_size, th, num_harm,
                                 min_f0, max_f0, f0_eth, harm_dev_slope, min_sine_dur)
     # subtract sinusoids from original sound
-    x_res = sine_subtraction(audio, num_sines, hop_size, h_freq, h_mag, h_phase, sr)
+    x_res = sine_subtraction(x, num_sines, hop_size, h_freq, h_mag, h_phase, sr)
     # perform stochastic analysis of residual
-    stoch_env = stochastic_model_analysis(x_res, hop_size, hop_size * 2, stoch_factor)
+    stoch_env = stochastic_model_analysis(x_res, hop_size * 2, hop_size, stoch_factor)
 
     # create figure to plot
-    #plt.figure(figsize=(9, 6))
+    # plt.figure(figsize=(9, 6))
 
     # frequency range to plot
     max_plot_freq = 2000.0
@@ -552,5 +625,5 @@ def fft_extractor(
 
     # plt.tight_layout()
     # plt.show()
-
-    return harms[:, 0]
+    freq = harms[:, 0]
+    return freq

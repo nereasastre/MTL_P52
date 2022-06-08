@@ -16,5 +16,5 @@ sd.play(myRecording, SAMPLE_FREQ)
 print("Playing audio")
 sd.wait()
 
-scipy.io.wavfile.write('example1.wav', SAMPLE_FREQ, myRecording)
+scipy.io.wavfile.write('../real_time_pitch_extractor/example1.wav', SAMPLE_FREQ, myRecording)
 
