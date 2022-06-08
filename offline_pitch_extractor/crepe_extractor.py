@@ -1,36 +1,32 @@
 import crepe
 import os
-import statistics
+import numpy as np
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-def crepe_pitch(audio, sr):
+def crepe_extractor(audio, sr=44100):
     """
-    Extracts pitch from sound and returns
+    Extracts the fundamental frequency given an input sound using the crepe prediction method.
     Args:
-        audio: a .wav file containing the audio from which to extract pitch
-        sr: the sampling rate of the audio
-    Output:
-        Returns time (the time onsets), frequency (the pitch),
-        confidence (the prediction confidence), activation (the activation)
-
+        audio: the input sound (list of float)
+        sr: the sampling rate (int)
+    Returns:
+        freq: the estimated fundamental frequency (float)
     """
-    time, frequency, confidence, activation = crepe.predict(audio, sr, viterbi=True)
+    time, freqs, confidence, activation = crepe.predict(audio, sr, viterbi=True)
 
     idxs = []
 
-    for idx in range(len(frequency) - 1):
+    for idx in range(len(freqs) - 1):
         if confidence[idx] > 0.8:
             if not idxs:
                 idxs.append(idx)  # append first decent guess
-        if abs(frequency[idx] - frequency[idx + 1]) > 3:
+        if abs(freqs[idx] - freqs[idx + 1]) > 3:
             if idx != 0:
                 idxs.append(idx)
 
-    # print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
-    # print("time: ", time, "frequency: ", frequency, "confidence: ", confidence)
-    # print(len(audio), "\n", len(time), "\n",  len(frequency), "\n",len(confidence),  "\n", len(activation))
-    # return time, frequency, confidence, activation
-    freq = statistics.mean(frequency[idxs])
-    return freq
+    freq = np.mean(freqs[idxs])
+    return freqs
+
+
