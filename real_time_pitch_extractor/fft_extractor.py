@@ -15,5 +15,3 @@ def fft_pitch_detector(audio):
     max_index = np.argmax(magnitude_spec)
     pitch_detected = max_index * (fs / window_size)         # maximum frequency
     return pitch_detected
-
-
