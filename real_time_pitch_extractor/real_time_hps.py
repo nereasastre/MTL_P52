@@ -2,7 +2,6 @@ import os
 import time
 import numpy as np
 import sounddevice as sd
-import util_functions as UF
 import hps_extractor as hpse
 
 # General settings that can be changed by the user
