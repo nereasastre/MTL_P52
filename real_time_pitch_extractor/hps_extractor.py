@@ -4,14 +4,14 @@ import os
 import copy
 import util_functions as uf
 
-fs = 48000  # sample frequency in Hz
-window_size = 48000  # window size of the DFT in samples
+sr = 41000  # sample frequency in Hz
+window_size = 41000  # window size of the DFT in samples
 
 num_hps = 5  # max number of harmonic product spectrums
 power_th = 1e-6  # tuning is activated if the signal power exceeds this threshold
 white_noise_th = 0.2  # everything under white_noise_th*avg_energy_per_freq is cut off
 
-delta_freq = fs / window_size  # frequency step width of the interpolated DFT
+delta_freq = sr / window_size  # frequency step width of the interpolated DFT
 octave_bands = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
 
 hanning_window = np.hanning(window_size)
@@ -60,7 +60,7 @@ def hps_pitch_detector(audio):
         hps_spec = tmp_hps_spec
 
     max_ind = np.argmax(hps_spec)
-    pitch_detected = max_ind * (fs / window_size) / num_hps
+    pitch_detected = max_ind * (sr / window_size) / num_hps
 
     closest_pitch, closest_note, pitch_diff = uf.find_closest_note(pitch_detected)  # find closest note
     return pitch_detected, closest_pitch, closest_note, pitch_diff
