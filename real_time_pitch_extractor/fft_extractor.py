@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.fftpack
-import util_functions as UF
 
 fs = 44100  # sample frequency in Hz
 window_size = 44100  # window size of the DFT in samples
@@ -15,5 +14,4 @@ def fft_pitch_detector(window_samples):
 
     max_index = np.argmax(magnitude_spec)
     pitch_detected = max_index * (fs / window_size)         # maximum frequency
-    closest_note, closest_pitch, pitch_diff = UF.find_closest_note(pitch_detected)
-    return pitch_detected, closest_pitch, closest_note, pitch_diff
+    return pitch_detected
