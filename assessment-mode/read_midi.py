@@ -4,8 +4,6 @@ NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 OCTAVES = list(range(7))
 NOTES_IN_OCTAVE = len(NOTES)
 errors = {
-    'program': 'Bad input, please refer this spec-\n'
-               'http://www.electronics.dit.ie/staff/tscarff/Music_technology/midi/program_change.htm',
     'notes': 'Bad input! note must be in [0, 127]"-\n'
 }
 
