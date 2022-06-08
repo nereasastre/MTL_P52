@@ -42,7 +42,6 @@ def list_number_to_list_note(midi_notes, note_off=False):
 
         Returns:
             A string containing the note (A-G) and octave
-            TODO do we want this as a single string? I feel like having it as a separate thing might make more sense
         """
         # nerea: added a -1 because we were an octave off, TODO check this does not give us problems in the future
         octave = number // NOTES_IN_OCTAVE - 1
