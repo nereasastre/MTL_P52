@@ -2,7 +2,8 @@ import numpy as np
 import scipy.fftpack
 import os
 import copy
-import util_functions as uf
+
+from real_time_pitch_extractor.util_functions import find_closest_note
 
 fs = 48000  # sample frequency in Hz
 window_size = 48000  # window size of the DFT in samples
@@ -62,5 +63,5 @@ def hps_pitch_detector(window_samples):
     max_ind = np.argmax(hps_spec)
     pitch_detected = max_ind * (fs / window_size) / num_hps
 
-    closest_pitch, closest_note, pitch_diff = uf.find_closest_note(pitch_detected)  # find closest note
+    closest_pitch, closest_note, pitch_diff = find_closest_note(pitch_detected)  # find closest note
     return pitch_detected, closest_pitch, closest_note, pitch_diff

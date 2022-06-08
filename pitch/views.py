@@ -8,6 +8,8 @@ from scipy.io import wavfile
 from offline_pitch_extractor.yin_extractor import yin_extractor
 from pitch.forms import AudioForm
 from pitch.models import Audio_store
+from real_time_pitch_extractor.fft_extractor import fft_pitch_detector
+from real_time_pitch_extractor.hps_extractor import hps_pitch_detector
 
 
 def index_view(request):
@@ -34,13 +36,13 @@ def audio_store(request):
             #USE THIS IN CASE STERIO
             #audiodata = audio.astype(float)
             #final_audio = audiodata.sum(axis=1) / 2
-            pitches = yin_extractor(audio=audio)
-            print("audio pitches", pitches)
+            pitch_detected, closest_note, closest_pitch, pitch_diff = hps_pitch_detector(window_samples=audio)
+            print("audio pitches", pitch_detected)
             os.remove(audio_path)
             Audio_store.objects.all().delete()
             return JsonResponse(
                 {
-                    "pitch": pitches,
+                    "pitch": [pitch_detected],
                     "success": True,
                 }
             )
