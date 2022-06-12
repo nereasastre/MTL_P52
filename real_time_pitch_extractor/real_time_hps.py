@@ -25,29 +25,46 @@ def callback(indata, frames, time, status):
         print(status)
         return
     if any(indata):
-        callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0]))  # append new samples
-        callback.window_samples = callback.window_samples[len(indata[:, 0]):]  # remove old samples
+        callback.window_samples = np.concatenate(
+            (callback.window_samples, indata[:, 0])
+        )  # append new samples
+        callback.window_samples = callback.window_samples[
+            len(indata[:, 0]) :
+        ]  # remove old samples
 
-        pitch_detected, closest_pitch, closest_note, pitch_diff = hpse.hps_pitch_detector(callback.window_samples)           # extract pitch
+        (
+            pitch_detected,
+            closest_pitch,
+            closest_note,
+            pitch_diff,
+        ) = hpse.hps_pitch_detector(
+            callback.window_samples
+        )  # extract pitch
         pitch_diff = round(pitch_diff, 1)
         callback.noteBuffer.insert(0, closest_note)  # note that this is a ringbuffer
         callback.noteBuffer.pop()
 
-        os.system('cls' if os.name == 'nt' else 'clear')
-        if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-            print(f"Pitch detected: {pitch_detected} --> Closest note: {closest_note} ({closest_pitch}) --> Pitch difference: {pitch_diff}")
+        os.system("cls" if os.name == "nt" else "clear")
+        if callback.noteBuffer.count(callback.noteBuffer[0]) == len(
+            callback.noteBuffer
+        ):
+            print(
+                f"Pitch detected: {pitch_detected} --> Closest note: {closest_note} ({closest_pitch}) --> Pitch difference: {pitch_diff}"
+            )
         else:
             print(f"Closest note: ...")
 
     else:
-        print('no input')
+        print("no input")
 
 
 # Start the microphone input stream
 
 try:
     print("Starting HPS guitar tuner...")
-    with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=sr):
+    with sd.InputStream(
+        channels=1, callback=callback, blocksize=window_step, samplerate=sr
+    ):
         while True:
             time.sleep(0.5)
 except Exception as e:

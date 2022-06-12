@@ -17,19 +17,37 @@ def extract_pitch():
     Records sound for a given amount of seconds and then attempts to extract pitch.
     Extracts pitch offline (after recording is over).
     """
-    extractors = [zero_cross_extractor, crepe_extractor, fft_extractor, auto_extractor, yin_extractor, fft_pitch_detector, hps_pitch_detector]
-    extractor_names = ['Zero Crossing', 'CREPE', 'FFT', 'Autocorrelation', 'YIN', 'FFT2', 'HPS']
+    extractors = [
+        zero_cross_extractor,
+        crepe_extractor,
+        fft_extractor,
+        auto_extractor,
+        yin_extractor,
+        fft_pitch_detector,
+        hps_pitch_detector,
+    ]
+    extractor_names = [
+        "Zero Crossing",
+        "CREPE",
+        "FFT",
+        "Autocorrelation",
+        "YIN",
+        "FFT2",
+        "HPS",
+    ]
 
     # Ask for the extractor type
     extractor_idx = int(
-        input("Insert extractor to use: \n"
-              "    1. Zero Crossing \n"
-              "    2. CREPE \n"
-              "    3. FFT \n"
-              "    4. Autocorrelation \n"
-              "    5. YIN \n"
-              "    6. FFT2 \n"
-              "    7. HPS \n")
+        input(
+            "Insert extractor to use: \n"
+            "    1. Zero Crossing \n"
+            "    2. CREPE \n"
+            "    3. FFT \n"
+            "    4. Autocorrelation \n"
+            "    5. YIN \n"
+            "    6. FFT2 \n"
+            "    7. HPS \n"
+        )
     )  # Extractor type todo account for wrong inputs
 
     """# record and load audio
@@ -43,16 +61,16 @@ def extract_pitch():
 
     # Extract pitch calling the corresponding extractor
 
-    start_time = time.time()        # Measures execution time
+    start_time = time.time()  # Measures execution time
 
-    freq = extractors[extractor_idx-1](audio, sr)
+    freq = extractors[extractor_idx - 1](audio, sr)
 
     # measures of efficiency
     end_time = time.time()
     execution_time = end_time - start_time
 
-    audio_dur = len(audio)/sr
-    rtf = execution_time/audio_dur
+    audio_dur = len(audio) / sr
+    rtf = execution_time / audio_dur
 
     # Print some info
     print("Execution time %s seconds" % execution_time)
