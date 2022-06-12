@@ -38,7 +38,7 @@ def extract_pitch():
     sr, audio = wavfile.read(recording_path)"""
 
     # record and load audio
-    path = "../sounds/sine-101.wav"
+    path = "../sounds/sine-1000.wav"
     sr, audio = wavfile.read(path)
 
     # Extract pitch calling the corresponding extractor

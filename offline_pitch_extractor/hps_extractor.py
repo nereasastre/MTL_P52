@@ -3,22 +3,23 @@ import scipy.fftpack
 import os
 import copy
 
-sr = 44100  # sample frequency in Hz
-window_size = 44100  # window size of the DFT in samples
 
-num_hps = 5  # max number of harmonic product spectrums
-power_th = 1e-6  # tuning is activated if the signal power exceeds this threshold
-white_noise_th = 0.2  # everything under white_noise_th*avg_energy_per_freq is cut off
-
-delta_freq = sr / window_size  # frequency step width of the interpolated DFT
-octave_bands = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
-
-hanning_window = np.hanning(window_size)
 
 # Harmonic Product Spectrum (HPS) pitch detector
 
 
 def hps_pitch_detector(audio, sr=44100):
+    window_size = len(audio)  # window size of the DFT in samples
+
+    num_hps = 5  # max number of harmonic product spectrums
+    power_th = 1e-6  # tuning is activated if the signal power exceeds this threshold
+    white_noise_th = 0.2  # everything under white_noise_th*avg_energy_per_freq is cut off
+
+    delta_freq = sr / window_size  # frequency step width of the interpolated DFT
+    octave_bands = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
+
+    hanning_window = np.hanning(window_size)
+
     # skip if signal power is too low
     signal_power = (np.linalg.norm(audio, ord=2) ** 2) / len(audio)
     if signal_power < power_th:
