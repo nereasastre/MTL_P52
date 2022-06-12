@@ -2,11 +2,6 @@ import sounddevice as sd
 import numpy as np
 import os
 import fft_extractor as ffte
-import util_functions as uf
-import yin_extractor as ye
-import auto_extractor as ae
-import crepe_extractor as ce
-import zero_cross_extractor as zce
 
 # General settings
 fs = 44100  # sample frequency in Hz
@@ -26,9 +21,9 @@ def callback(indata, frames, time, status):
         print(status)
     if any(indata):
         # Call fft detection function to obtain pitch detected and its closest note. We can use other pitch detectors.
-        # pitch_detected = ffte.fft_pitch_detector(window_samples)
-        pitch_detected = ffte.fft_pitch_detector(window_samples)
-        closest_note, closest_pitch, pitch_diff = uf.find_closest_note(pitch_detected)
+
+        pitch_detected, closest_note, closest_pitch, pitch_diff = ffte.fft_pitch_detector(window_samples)
+        
         os.system('cls' if os.name == 'nt' else 'clear')
         print(f"Pitch detected: {pitch_detected} --> Closest note: {closest_note} ({closest_pitch}) --> Pitch difference: {pitch_diff}")
     else:

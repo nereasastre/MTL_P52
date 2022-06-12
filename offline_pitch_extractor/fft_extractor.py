@@ -5,6 +5,7 @@ from scipy.fftpack import fft, ifft, fftshift
 import math
 
 tol = 1e-14
+window_size = 44100  # window size of the DFT in samples
 
 
 def is_power2(n):
@@ -627,3 +628,14 @@ def fft_extractor(
     # plt.show()
     freq = harms[:, 0]
     return freq
+
+
+def fft_pitch_detector(audio, sr = 44100):
+    magnitude_spec = abs(fft(audio)[:len(audio) // 2])
+
+    for i in range(int(62 / (sr / window_size))):
+        magnitude_spec[i] = 0  # suppress mains hum
+
+    max_index = np.argmax(magnitude_spec)
+    pitch_detected = max_index * (sr / window_size)         # maximum frequency
+    return pitch_detected
