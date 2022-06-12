@@ -630,7 +630,7 @@ def fft_extractor(
     return freq
 
 
-def fft_pitch_detector(audio, sr = 44100):
+def fft_pitch_detector(audio, sr=44100):
     magnitude_spec = abs(fft(audio)[:len(audio) // 2])
 
     for i in range(int(62 / (sr / window_size))):
