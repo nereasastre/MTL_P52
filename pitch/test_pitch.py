@@ -98,6 +98,20 @@ def test_auto_extractor(audio_path, expected):
     # assert
     assert abs(frequency - expected) <= 3
 
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+def test_real_time_fft_extractor(audio_path, expected):
+    """Tests autocorrelation extractor against different inputs"""
+    # arrange
+    sr, audio = wavfile.read(audio_path)
+    # act
+    frequency = auto_extractor(audio, sr)
+    diff = abs(frequency - expected)
+    print("----------real_time_fft-------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
+    # assert
+    assert diff <= 4
+
 
 @pytest.mark.parametrize('extractor', EXTRACTORS)
 def test_execution_time(extractor):
