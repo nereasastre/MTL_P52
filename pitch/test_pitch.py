@@ -23,12 +23,8 @@ AUDIO_EXPECTED = [
     ("../MTL_P52/sounds/sawtooth-440.wav", 440),
 ]
 
-AUDIO_EXPECTED1 = [
-    ("../MTL_P52/sounds/sawtooth-440.wav", 440),
-]
 
-
-EXTRACTORS = [crepe_extractor, fft_extractor, yin_extractor, zero_cross_extractor]
+EXTRACTORS = [crepe_extractor, fft_extractor, yin_extractor, zero_cross_extractor, auto_extractor]
 
 
 def clean_frequencies(frequency):
@@ -44,10 +40,16 @@ def test_crepe_extractor(audio_path, expected):
     """Tests CREPE extractor against different inputs"""
     # arrange
     sr, audio = wavfile.read(audio_path)
+
     # act
     frequency = crepe_extractor(audio, sr)
+    diff = abs(np.mean(frequency) - expected)
+    print("-----------CREPE------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
+
     # assert
-    assert abs(np.mean(frequency) - expected) <= 4
+    assert diff <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -60,7 +62,12 @@ def test_fft_extractor(audio_path, expected):
     # assert
     non_zero_freq = clean_frequencies(frequency)
 
-    assert abs(np.mean(non_zero_freq) - expected) <= 4
+    diff = abs(np.mean(non_zero_freq) - expected)
+    print("---------FFT------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
+    # assert
+    assert diff <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -72,7 +79,12 @@ def test_zero_cross_extractor(audio_path, expected):
     # act
     frequency = zero_cross_extractor(audio, sr)
     # assert
-    assert abs(frequency - expected) <= 3
+    diff = abs(frequency - expected)
+    print("----------ZERO_CROSS-------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
+    # assert
+    assert diff <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -85,7 +97,12 @@ def test_yin_extractor(audio_path, expected):
     frequency = yin_extractor(audio, sr)
     # assert
     non_zero_freq = clean_frequencies(frequency)
-    assert abs(np.mean(non_zero_freq) - expected) <= 4
+    diff = abs(np.mean(non_zero_freq) - expected)
+    print("---------YIN------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
+    # assert
+    assert diff <= 4
 
 
 @pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
@@ -95,8 +112,27 @@ def test_auto_extractor(audio_path, expected):
     sr, audio = wavfile.read(audio_path)
     # act
     frequency = auto_extractor(audio, sr)
+    diff = abs(frequency - expected)
+    print("----------AUTO_CORR-------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
     # assert
-    assert abs(frequency - expected) <= 3
+    assert diff <= 4
+
+
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
+def test_real_time_fft_extractor(audio_path, expected):
+    """Tests autocorrelation extractor against different inputs"""
+    # arrange
+    sr, audio = wavfile.read(audio_path)
+    # act
+    frequency = auto_extractor(audio, sr)
+    diff = abs(frequency - expected)
+    print("----------real_time_fft-------------")
+    print(f"Audio: {audio_path} \nError: {diff}")
+    print("-----------------------------")
+    # assert
+    assert diff <= 4
 
 
 @pytest.mark.parametrize('extractor', EXTRACTORS)
@@ -114,5 +150,6 @@ def test_execution_time(extractor):
     execution_time = end_time - start_time
     audio_duration = len(audio) / sr
     real_time_factor = execution_time / audio_duration
+    print(f"Extractor: {extractor}\nReal-time factor: {real_time_factor}")
     assert real_time_factor <= 1
 
