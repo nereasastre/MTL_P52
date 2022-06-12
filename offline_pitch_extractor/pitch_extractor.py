@@ -2,7 +2,8 @@ from scipy.io import wavfile
 import os, sys
 from auto_extractor import auto_extractor
 from crepe_extractor import crepe_extractor
-from fft_extractor import fft_extractor
+from hps_extractor import hps_pitch_detector
+from fft_extractor import fft_extractor, fft_pitch_detector
 from zero_cross_extractor import zero_cross_extractor
 from yin_extractor import yin_extractor
 import time
@@ -16,8 +17,8 @@ def extract_pitch():
     Records sound for a given amount of seconds and then attempts to extract pitch.
     Extracts pitch offline (after recording is over).
     """
-    extractors = [zero_cross_extractor, crepe_extractor, fft_extractor, auto_extractor, yin_extractor]
-    extractor_names = ['Zero Crossing', 'CREPE', 'FFT', 'Autocorrelation', 'YIN']
+    extractors = [zero_cross_extractor, crepe_extractor, fft_extractor, auto_extractor, yin_extractor, fft_pitch_detector, hps_pitch_detector]
+    extractor_names = ['Zero Crossing', 'CREPE', 'FFT', 'Autocorrelation', 'YIN', 'FFT2', 'HPS']
 
     # Ask for the extractor type
     extractor_idx = int(
@@ -26,7 +27,9 @@ def extract_pitch():
               "    2. CREPE \n"
               "    3. FFT \n"
               "    4. Autocorrelation \n"
-              "    5. YIN \n")
+              "    5. YIN \n"
+              "    6. FFT2 \n"
+              "    7. HPS \n")
     )  # Extractor type todo account for wrong inputs
 
     """# record and load audio
