@@ -44,7 +44,7 @@ def real_time(scallback):
         with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=fs):
             while settings.RECORD:
                 scallback()
-                sleep(0.5)
+                sleep(5)
     except Exception as e:
         print(str(e))
         return

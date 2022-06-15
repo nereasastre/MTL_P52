@@ -5,7 +5,7 @@ from threading import Thread
 from channels.generic.websocket import WebsocketConsumer
 from django.conf import settings
 
-from real_time_pitch_extractor.real_time_fft import real_time
+from real_time_pitch_extractor.real_time_hps import real_time
 
 condition = Event()
 
