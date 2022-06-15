@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
     # Own Apps
     "pitch",
     # Extra Apps
@@ -75,6 +76,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "pitch_monitor.wsgi.application"
+ASGI_APPLICATION = "pitch_monitor.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -125,3 +127,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+PITCH_DETECTED = []
+CLOSEST_NOTE = []
+CLOSEST_PITCH = []
+PITCH_DIFF = []
+RECORD = True
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.138',]

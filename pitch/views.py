@@ -36,7 +36,7 @@ def audio_store(request):
             #USE THIS IN CASE STERIO
             #audiodata = audio.astype(float)
             #final_audio = audiodata.sum(axis=1) / 2
-            pitch_detected, closest_note, closest_pitch, pitch_diff = hps_pitch_detector(window_samples=audio)
+            pitch_detected, closest_note, closest_pitch, pitch_diff = fft_pitch_detector(audio=audio)
             print("audio pitches", pitch_detected)
             os.remove(audio_path)
             Audio_store.objects.all().delete()

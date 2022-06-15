@@ -1,4 +1,5 @@
 absl-py==1.0.0
+channels==3.0.4
 wavio==0.0.4
 alabaster==0.7.12
 asgiref==3.4.1

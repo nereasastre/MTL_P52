@@ -9,9 +9,9 @@
                 </button>
             </center>
         </div>-->
-        <div class="cursor-pointer" id="recordButton">MIC</div>
+        <!--<div class="cursor-pointer" id="recordButton">MIC</div>-->
 
-        <canvas id="axesDiv" class="ui centered" style="width: 800px; height: 388px;"></canvas>
+        <canvas id="axesDiv" class="ui centered" style="width: 740px; height: 388px;"></canvas>
     </div>
 </div>
 
@@ -72,6 +72,7 @@
         let finalBuffers = new Float32Array(3);
         let recorder;
         let mediaStream = null
+        let socket = null
 
         // calculate time axis labels
         function getTimeLabels(n) {
@@ -144,10 +145,13 @@
                 timeSlice: 1,
                 checkForInactiveTracks: true,
                 numberOfAudioChannels: 1,
+                sampleRate: 44100,
+                desiredSampRate: 44100,
+                bufferSize: 2048,
                 ondataavailable: (blob) => {
                     //socketio.emit('stream_audio', blob); // sends blob to server
-                    console.log("sent blob", blob)
-                    createWaveFileAndSendToServer(blob)
+                    //console.log("sent blob", blob)
+                    //createWaveFileAndSendToServer(blob)
                 },
             };
 
@@ -178,12 +182,32 @@
         function onRecordClickHandler() {
             let recording = $(this).hasClass("recording");
             if (!recording) {
+                console.log("recording");
                 $(this).prop("disabled", true);
-
                 resetChartData();
+                if(socket != null) socket.close();
+                socket = new WebSocket('ws://localhost:8000/ws/real_time/')
+                socket.onmessage = function(event){
+                    let pitchData = JSON.parse(event.data);
+                    console.log(pitchData);
+                    finalBuffers[0] = pitchData.pitch
+                    finalBuffers[1] = 1
+                    finalBuffers[2] = 1
+                    if(audioReader != null) {
+                        requestAnimationFrame(animatePitch);
+                    }
+                    else setupAudioGraph()
+                    //setTimeout(() => { setupAudioGraph(); }, 100);
+                }
                 // start microphone stream using getUserMedia and runs the feature extraction
-                startMicRecordStream();
+                //startMicRecordStream();
+                startAudioProcessing()
             } else {
+                console.log("stop");
+                socket.close()
+                socket.onclose = (event) => {
+                    console.log("Connection closed\r\n");
+                };
                 stopMicRecordStream();
             }
         }
@@ -201,7 +225,7 @@
             //     throw "Could not access microphone - getUserMedia not available";
             // }
 
-            recordingRT()
+            // recordingRT()
             // navigator.mediaDevices.getUserMedia({
             //     video: false,
             //     audio: true
@@ -219,14 +243,14 @@
 
         function startAudioProcessing() {
 
-            audioCtx.audioWorklet.addModule("static/js/processor.js")
-                .then(setupAudioGraph)
-                .catch(function moduleLoadRejected(msg) {
-                    console.log(`There was a problem loading the AudioWorklet module code: \n ${msg}`);
-                });
+            // audioCtx.audioWorklet.addModule("static/js/processor.js")
+            //     .then(setupAudioGraph)
+            //     .catch(function moduleLoadRejected(msg) {
+            //         console.log(`There was a problem loading the AudioWorklet module code: \n ${msg}`);
+            //     });
             // set button to stop
             $("#recordButton").addClass("recording");
-            $("#recordButton").html('Stop &nbsp;&nbsp;<i class="stop icon"></i>');
+            //$("#recordButton").html('Stop &nbsp;&nbsp;<i class="stop icon"></i>');
             $("#recordButton").prop("disabled", false);
         }
 
@@ -358,22 +382,22 @@
         }
         function stopMicRecordStream() {
 
-            if (animationId) {
-                //cancelAnimationFrame(animationId);
-                //drawFullPitchContour();
-            }
+            // if (animationId) {
+            //     //cancelAnimationFrame(animationId);
+            //     //drawFullPitchContour();
+            // }
 
-            // const sleep = m => new Promise(r => setTimeout(r, m));
-            // await sleep(3000);
+            // // const sleep = m => new Promise(r => setTimeout(r, m));
+            // // await sleep(3000);
 
-            recorder.stopRecording(() => {
-                console.log("Stop recording!");
-                mediaStream.stop();
-                //console.log(recorder.save("test"));
-                //let blob = recorder.getBlob();
-                //createWaveFileAndSendToServer(blob);
-                //invokeSaveAsDialog(blob, 'audio.wav');
-            });
+            // recorder.stopRecording(() => {
+            //     console.log("Stop recording!");
+            //     mediaStream.stop();
+            //     console.log(recorder.save("test"));
+            //     //let blob = recorder.getBlob();
+            //     //createWaveFileAndSendToServer(blob);
+            //     //invokeSaveAsDialog(blob, 'audio.wav');
+            // });
 
 
             // stop mic stream
@@ -383,7 +407,7 @@
             // });
 
             $("#recordButton").removeClass("recording");
-            $("#recordButton").html('Mic &nbsp;&nbsp;<i class="microphone icon"></i>');
+            //$("#recordButton").html('Mic &nbsp;&nbsp;<i class="microphone icon"></i>');
 
 
             // audioCtx.close().then(function () {
