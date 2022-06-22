@@ -11,7 +11,7 @@
         </div>-->
         <!--<div class="cursor-pointer" id="recordButton">MIC</div>-->
 
-        <canvas id="axesDiv" class="ui centered" style="width: 740px; height: 388px;"></canvas>
+        <canvas id="axesDiv" class="ui centered" style="width: 740px; height: 650px;"></canvas>
     </div>
 </div>
 
@@ -179,6 +179,11 @@
             pitchChart.update();
         }
 
+        function onNewInstrument() {
+            resetChartData()
+            pitchChart.options = OPTIONS;
+            pitchChart.update();
+        }
         function onRecordClickHandler() {
             let recording = $(this).hasClass("recording");
             if (!recording) {
@@ -431,6 +436,7 @@
             // check for SharedArrayBuffer support:
             // add event listeners to ui objects
             $("#recordButton").on('click', onRecordClickHandler);
+            $("#instrument").on('change', onNewInstrument);
 
 
             try {

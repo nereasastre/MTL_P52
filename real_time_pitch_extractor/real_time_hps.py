@@ -36,17 +36,18 @@ def callback(indata, frames, time, status):
         callback.noteBuffer.insert(0, closest_note)  # note that this is a ringbuffer
         callback.noteBuffer.pop()
 
-        settings.PITCH_DETECTED = pitch_detected
-        settings.CLOSEST_NOTE = closest_note
-        settings.CLOSEST_PITCH = closest_pitch
-        settings.PITCH_DIFF = pitch_diff
-
         os.system('cls' if os.name == 'nt' else 'clear')
+
         if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-            print(
-                f"Pitch detected: {pitch_detected} --> Closest note: {closest_note} ({closest_pitch}) --> Pitch difference: {pitch_diff}")
+            settings.PITCH_DETECTED = pitch_detected
+            settings.CLOSEST_NOTE = closest_note
+            settings.CLOSEST_PITCH = closest_pitch
+            settings.PITCH_DIFF = pitch_diff
         else:
-            print(f"Closest note: ...")
+            settings.PITCH_DETECTED = 0
+            settings.CLOSEST_NOTE = 0
+            settings.CLOSEST_PITCH = 0
+            settings.PITCH_DIFF = 0
 
     else:
         print('no input')
@@ -60,6 +61,7 @@ def real_time(scallback):
         with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=sr):
             while settings.RECORD:
                 scallback()
+                time.sleep(0.2)
 
     except Exception as e:
         print(str(e))
