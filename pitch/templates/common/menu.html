@@ -115,30 +115,31 @@ body {
 <div id="options">
     <h1 style="color:green;  text-align: center; font-size: 30px; font-family:Verdana, Geneva, Tahoma, sans-serif;">Pitch Monitor</h1>
 
-    <!-- Select for the instruments
-    <label for="Intrument"> <h4> Choose a Instrument: </h4> </label>
-    <select name="Intrument" id="instrument">
-        <option value="Guitar">Guitar</option>
-        <option value="Violin">Violin</option>
-        <option value="Flute">Flute</option>
-        <option value="Bass">Bass</option>
-        <option value="Cello">Cello</option>
-        <option value="DoubleBass">DoubleBass</option>
-        <option value="Sax">Sax</option>
-        <option value="Trombone">Trombone</option>
-        <option value="Bass Horn">Bass Horn</option>
-        <option value="Ukulele">Ukulele</option>
-    </select> -->
+    <!-- Select for the instruments -->
+    <label for="Instrument"> <h4> Choose a Instrument: </h4> </label>
+    <select name="Instrument" id="instrument"  onchange="changeInstrument()">
+        <option value='Default'>Default</option>
+        <option value='Guitar'>Guitar</option>
+        <option value='Violin'>Violin</option>
+        <option value='Flute'>Flute</option>
+        <option value='Bass'>Bass</option>
+        <option value='Cello'>Cello</option>
+        <option value='Double Bass'>Double Bass</option>
+        <option value='Sax'>Sax</option>
+        <option value='Trombone'>Trombone</option>
+        <option value='Bass Horn'>Bass Horn</option>
+        <option value='Ukulele'>Ukulele</option>
+        <option value='Voice'>Voice</option>
+    </select>
+    
 
     <!-- Select for the Mode -->
     <label for="Mode"> <h4> Choose a Mode:</h4> </label>
     <select name="Mode" id="mode">
         <option value="monitor">Monitor</option>
-        <option value="tunner">Tunner</option>
-        <option value="assesment">Assesment</option>
+        <option value="tuner">Tuner</option>
+        <option value="assessment">Assessment</option>
     </select>
-
-    <span class="bi bi-mic-mute"></span>
 
     <!-- Select for the Input -->
     <label for="Input"> <h4>Input:</h4> </label>
@@ -146,7 +147,9 @@ body {
         <option title="Micro" value="micro">Default</option>
     </select>
 
-    <div class="box cursor-pointer w-[50px] h-[50px] ml-[-250px] mt-[50px]" id="recordButton">
+    <span class="bi bi-mic-mute"></span>
+
+    <div class="box cursor-pointer w-[50px] h-[50px] ml-[-250px] mt-[100px]" id="recordButton">
       <div class="object">
           <div class="outline"></div>
           <div class="outline" id="delayed"></div>
