@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="flex flex-row ">
-    {% include 'common/tunner.html' %}
+<div class="flex flex-row justify-between">
+    {% include 'common/menu.html' with mode=mode %}
+    <div class="ml-[10rem]">
+        {% include 'common/tunner.html' %}
+    </div>
 </div>
 
 {% endblock %}

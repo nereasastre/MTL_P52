@@ -16,7 +16,12 @@ class WSConsumer(WebsocketConsumer):
     def scallback(self):
         print(
             f"Pitch detected: {settings.PITCH_DETECTED} --> Closest note: {settings.CLOSEST_NOTE} ({settings.CLOSEST_PITCH}) --> Pitch difference: {settings.PITCH_DIFF}")
-        self.send(json.dumps({"pitch": settings.PITCH_DETECTED}))
+        self.send(json.dumps({
+            "pitch": settings.PITCH_DETECTED,
+            "closestNote": settings.CLOSEST_NOTE,
+            "closestPitch": settings.CLOSEST_PITCH,
+            "pitchDiff": settings.PITCH_DIFF,
+        }))
 
     def calc_pitch(self):
         print(real_time(self.scallback))

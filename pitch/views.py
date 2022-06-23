@@ -3,6 +3,7 @@ import os
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.urls import resolve
 from scipy.io import wavfile
 
 from offline_pitch_extractor.yin_extractor import yin_extractor
@@ -23,7 +24,10 @@ def index_view(request):
 def tunner_view(request):
     try:
         template_name = "design2.html"
-        context = {}
+        current_url = resolve(request.path_info).url_name
+        context = {
+            "mode": current_url
+        }
         return render(request, template_name, context)
     except Exception as e:
         logging.error(f"[REFERRAL_DETAIL_VIEW] - ERROR 500 - {e}")

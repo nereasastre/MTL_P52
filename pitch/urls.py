@@ -6,6 +6,6 @@ app_name = "pitch"
 
 urlpatterns = [
     path("", index_view, name="index"),
-    path("tunner", tunner_view, name="tunner"),
+    path("tuner", tunner_view, name="tuner"),
     path('audio', audio_store, name="audio-process"),
 ]
