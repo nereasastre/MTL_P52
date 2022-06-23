@@ -4,8 +4,9 @@ import sounddevice as sd
 import time
 from django.conf import settings
 
-#import hps_extractor as hpse
+# import hps_extractor as hpse
 from real_time_pitch_extractor.hps_extractor import hps_pitch_detector
+
 # General settings that can be changed by the user
 sr = 44100  # sample frequency in Hz
 window_size = 44100  # window size of the DFT in samples
@@ -27,18 +28,25 @@ def callback(indata, frames, time, status):
         print(status)
         return
     if any(indata):
-        callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0]))  # append new samples
-        callback.window_samples = callback.window_samples[len(indata[:, 0]):]  # remove old samples
+        callback.window_samples = np.concatenate(
+            (callback.window_samples, indata[:, 0])
+        )  # append new samples
+        callback.window_samples = callback.window_samples[
+            len(indata[:, 0]) :
+        ]  # remove old samples
 
         pitch_detected, closest_pitch, closest_note, pitch_diff = hps_pitch_detector(
-            callback.window_samples)  # extract pitch
+            callback.window_samples
+        )  # extract pitch
         pitch_diff = round(pitch_diff, 1)
         callback.noteBuffer.insert(0, closest_note)  # note that this is a ringbuffer
         callback.noteBuffer.pop()
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+        os.system("cls" if os.name == "nt" else "clear")
 
-        if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
+        if callback.noteBuffer.count(callback.noteBuffer[0]) == len(
+            callback.noteBuffer
+        ):
             settings.PITCH_DETECTED = pitch_detected
             settings.CLOSEST_NOTE = closest_note
             settings.CLOSEST_PITCH = closest_pitch
@@ -50,15 +58,18 @@ def callback(indata, frames, time, status):
             settings.PITCH_DIFF = 0
 
     else:
-        print('no input')
+        print("no input")
 
 
 # Start the microphone input stream
 
+
 def real_time(scallback):
     try:
         print("Starting HPS guitar tuner...")
-        with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=sr):
+        with sd.InputStream(
+            channels=1, callback=callback, blocksize=window_step, samplerate=sr
+        ):
             while settings.RECORD:
                 scallback()
                 time.sleep(0.2)
