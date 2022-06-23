@@ -1,63 +1,32 @@
 import crepe
-from scipy.io import wavfile
 import os
+import numpy as np
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-def crepe_pitch(audio, sr):
+def crepe_extractor(audio, sr=44100):
     """
-    Extracts pitch from sound and returns
+    Extracts the fundamental frequency given an input sound using the crepe prediction method.
     Args:
-        audio: a .wav file containing the audio from which to extract pitch
-        sr: the sampling rate of the audio
-    Output:
-        Returns time (the time onsets), frequency (the pitch),
-        confidence (the prediction confidence), activation (the activation)
-
+        audio: the input sound (list of float)
+        sr: the sampling rate (int)
+    Returns:
+        freq: the estimated fundamental frequency (float)
     """
-    time, frequency, confidence, activation = crepe.predict(audio, sr, viterbi=True)
+    time, freqs, confidence, activation = crepe.predict(audio, sr, viterbi=True)
 
     idxs = []
 
-    for idx in range(len(frequency) - 1):
+    for idx in range(len(freqs) - 1):
         if confidence[idx] > 0.8:
             if not idxs:
                 idxs.append(idx)  # append first decent guess
-        if abs(frequency[idx] - frequency[idx + 1]) > 3:
+        if abs(freqs[idx] - freqs[idx + 1]) > 3:
             if idx != 0:
                 idxs.append(idx)
 
-    print("Detected frequency: ", frequency[idxs][0].round())
-
-    # print("time: ", time[idxs], "frequency: ", frequency[idxs], "confidence: ", confidence[idxs])
-    # print("time: ", time, "frequency: ", frequency, "confidence: ", confidence)
-    # print(len(audio), "\n", len(time), "\n",  len(frequency), "\n",len(confidence),  "\n", len(activation))
-    return time, frequency, confidence, activation
+    freq = np.mean(freqs[idxs])
+    return freqs
 
 
-def test_crepe_extractor():
-    # todo move to test folder once we start testing
-
-    """
-    Tests crepe extractor against the piano.wav file
-    Expected results: notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
-    """
-
-    sr, audio = wavfile.read("../sounds/sine-101.wav")
-    crepe_pitch(audio, sr)
-
-
-def test_crepe_extractor_sin_101():
-    # todo move to test folder once we start testing
-
-    """
-    Tests crepe extractor against the piano.wav file
-    Expected results: notes are E3 (130 Hz), G3 (196 Hz), F3 (174.61 Hz), C3 (130.81 Hz), C4 (261.63 Hz)
-    """
-
-    sr, audio = wavfile.read("../sounds/sine-101.wav")
-    crepe_pitch(audio, sr)
-
-
-test_crepe_extractor_sin_101()

@@ -17,8 +17,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/ringbuf.js@0.1.0/dist/index.js" crossorigin="anonymous"></script>
-
+    <!-- <script src="https://unpkg.com/ringbuf.js@0.1.0/dist/index.js" crossorigin="anonymous"></script> -->
+    <!-- recommended -->
+    <script src="https://www.WebRTC-Experiment.com/RecordRTC.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -34,9 +35,13 @@
         }
     </script>
 
+    <script>
+        if (!crossOriginIsolated) SharedArrayBuffer = ArrayBuffer;
+        console.log("window.isSecureContext", window.isSecureContext);
+    </script>
     <script src="{% static 'js/globals.js' %}" ></script>
-    <script src="{% static 'js/chartConfig.js' %}"></script>
     <script src="{% static 'js/pitchyinprob-processor.js' %}"></script>
+    <script src="{% static 'js/chartConfig.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
