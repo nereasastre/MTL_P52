@@ -21,13 +21,12 @@ def index_view(request):
     except Exception as e:
         logging.error(f"[REFERRAL_DETAIL_VIEW] - ERROR 500 - {e}")
 
+
 def tunner_view(request):
     try:
         template_name = "design2.html"
         current_url = resolve(request.path_info).url_name
-        context = {
-            "mode": current_url
-        }
+        context = {"mode": current_url}
         return render(request, template_name, context)
     except Exception as e:
         logging.error(f"[REFERRAL_DETAIL_VIEW] - ERROR 500 - {e}")
@@ -35,7 +34,7 @@ def tunner_view(request):
 
 def audio_store(request):
     print("request.FILES", request.FILES)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = AudioForm(request.POST, request.FILES or None)
         if form.is_valid():
             form.save()
@@ -44,11 +43,16 @@ def audio_store(request):
             audio_path = Audio_store.objects.first().record.path
             print(audio_path)
             sr, audio = wavfile.read(audio_path)
-            print("audio" , audio)
-            #USE THIS IN CASE STERIO
-            #audiodata = audio.astype(float)
-            #final_audio = audiodata.sum(axis=1) / 2
-            pitch_detected, closest_note, closest_pitch, pitch_diff = fft_pitch_detector(audio=audio)
+            print("audio", audio)
+            # USE THIS IN CASE STERIO
+            # audiodata = audio.astype(float)
+            # final_audio = audiodata.sum(axis=1) / 2
+            (
+                pitch_detected,
+                closest_note,
+                closest_pitch,
+                pitch_diff,
+            ) = fft_pitch_detector(audio=audio)
             print("audio pitches", pitch_detected)
             os.remove(audio_path)
             Audio_store.objects.all().delete()
