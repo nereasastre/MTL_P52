@@ -39,7 +39,7 @@ def clean_frequencies(frequency):
     return non_zero_freq
 
 
-@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_crepe_extractor(audio_path, expected):
     """Tests CREPE extractor against different inputs"""
     # arrange
@@ -50,7 +50,7 @@ def test_crepe_extractor(audio_path, expected):
     assert abs(np.mean(frequency) - expected) <= 4
 
 
-@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_fft_extractor(audio_path, expected):
     """Tests fft extractor against different inputs"""
     # arrange
@@ -63,7 +63,7 @@ def test_fft_extractor(audio_path, expected):
     assert abs(np.mean(non_zero_freq) - expected) <= 4
 
 
-@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_zero_cross_extractor(audio_path, expected):
     """Tests zero crossing extractor against different inputs"""
 
@@ -75,7 +75,7 @@ def test_zero_cross_extractor(audio_path, expected):
     assert abs(frequency - expected) <= 3
 
 
-@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_yin_extractor(audio_path, expected):
     """Tests YIN extractor against different inputs"""
 
@@ -88,7 +88,7 @@ def test_yin_extractor(audio_path, expected):
     assert abs(np.mean(non_zero_freq) - expected) <= 4
 
 
-@pytest.mark.parametrize("audio_path, expected", AUDIO_EXPECTED)
+@pytest.mark.parametrize('audio_path, expected', AUDIO_EXPECTED)
 def test_auto_extractor(audio_path, expected):
     """Tests autocorrelation extractor against different inputs"""
     # arrange
@@ -99,7 +99,7 @@ def test_auto_extractor(audio_path, expected):
     assert abs(frequency - expected) <= 3
 
 
-@pytest.mark.parametrize("extractor", EXTRACTORS)
+@pytest.mark.parametrize('extractor', EXTRACTORS)
 def test_execution_time(extractor):
     # arrange
     audio_path = "../MTL_P52/sounds/sine-101.wav"
@@ -115,3 +115,4 @@ def test_execution_time(extractor):
     audio_duration = len(audio) / sr
     real_time_factor = execution_time / audio_duration
     assert real_time_factor <= 1
+
