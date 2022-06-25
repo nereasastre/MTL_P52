@@ -24,7 +24,7 @@ This is the new Pitch Monitor, made in Django. This backend serves both the Pitc
 
 Make sure to install
 
-- [Python 3.9](https://www.python.org/downloads/release/python-390/)
+- [Python 3.10.5](https://www.python.org/downloads/)
 - [Pip](https://pip.pypa.io/en/stable/installation/)
 
 ### Installation
