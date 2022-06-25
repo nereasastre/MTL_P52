@@ -148,7 +148,7 @@ const OPTIONS = {
           "display": true,
           "fontSize": 16,
           "fontColor": "rgb(50,50,50)",
-          "labelString": "Pitch Class"
+          "labelString": "Note"
         }
       },
       /* auxiliary axes */

@@ -131,14 +131,14 @@ body {
         <option value='Ukulele'>Ukulele</option>
         <option value='Voice'>Voice</option>
     </select>
-    
+
 
     <!-- Select for the Mode -->
-    <label for="Mode"> <h4> Choose a Mode:</h4> </label>
-    <select name="Mode" id="mode">
-        <option value="monitor">Monitor</option>
-        <option value="tuner">Tuner</option>
-        <option value="assessment">Assessment</option>
+    <label for="Mode"> <h4> Choose a Mode: {{mode}}</h4> </label>
+    <select name="Mode" id="mode" onchange="changePage(this)">
+        <option value="monitor" {% if mode == 'monitor' %} selected="selected" {% endif %}>Monitor</option>
+        <option value="tuner" {% if mode == 'tuner' %} selected="selected" {% endif %}>Tuner</option>
+        <option value="assessment" {% if mode == 'assessment' %} selected="selected" {% endif %}>Assessment</option>
     </select>
 
     <!-- Select for the Input -->
@@ -163,4 +163,13 @@ body {
     </div>
 
 </div>
+
+<script>
+    function changePage(element) {
+        console.log(element.value)
+        if(element.value == "tuner") redirect("/tuner")
+        else redirect("/")
+
+    }
+</script>
 {% endblock %}
