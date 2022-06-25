@@ -21,13 +21,12 @@ def index_view(request):
     except Exception as e:
         logging.error(f"[REFERRAL_DETAIL_VIEW] - ERROR 500 - {e}")
 
+
 def tunner_view(request):
     try:
         template_name = "design2.html"
         current_url = resolve(request.path_info).url_name
-        context = {
-            "mode": current_url
-        }
+        context = {"mode": current_url}
         return render(request, template_name, context)
     except Exception as e:
         logging.error(f"[REFERRAL_DETAIL_VIEW] - ERROR 500 - {e}")
