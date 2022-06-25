@@ -21,49 +21,26 @@ def int_or_str(text):
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
-    "-l",
-    "--list-devices",
-    action="store_true",
-    help="show list of audio devices and exit",
-)
+    '-l', '--list-devices', action='store_true',
+    help='show list of audio devices and exit')
 parser.add_argument(
-    "-b",
-    "--bin-value",
-    type=float,
-    default=5,
-    help="target value in Hertz of a DFT bin",
-)
+    '-b', '--bin-value', type=float,
+    default=5, help='target value in Hertz of a DFT bin')
 parser.add_argument(
-    "-n",
-    "--noise-threshold",
-    type=float,
-    default=0.2,
-    help="threshold to differentiate data from noise",
-)
+    '-n', '--noise-threshold', type=float,
+    default=0.2, help='threshold to differentiate data from noise')
 parser.add_argument(
-    "-p",
-    "--peak-threshold",
-    type=float,
-    default=3 / 5,
-    help="threshold to find peaks in the DFT",
-)
+    '-p', '--peak-threshold', type=float,
+    default=3 / 5, help='threshold to find peaks in the DFT')
 parser.add_argument(
-    "-rc",
-    "--repeat-count",
-    type=int,
-    default=2,
-    help="number of times the same note must be repeated to not be considered as noise",
-)
+    '-rc', '--repeat-count', type=int,
+    default=2, help='number of times the same note must be repeated to not be considered as noise')
 parser.add_argument(
-    "-d", "--device", type=int_or_str, help="input device (numeric ID or substring)"
-)
+    '-d', '--device', type=int_or_str,
+    help='input device (numeric ID or substring)')
 parser.add_argument(
-    "-r",
-    "--samplerate",
-    type=float,
-    default=16000,
-    help="sampling rate of audio device",
-)
+    '-r', '--samplerate', type=float,
+    default=16000, help='sampling rate of audio device')
 args = parser.parse_args()
 
 buf = np.zeros(1)  # Microphone data buffer
@@ -90,8 +67,8 @@ def audio_callback(indata, frames, time, status):
         print("Samplerate is: " + str(args.samplerate))
         print("Bin value is: " + str(args.samplerate / len(buf)))
 
-    buf[: (factor - 1) * len(indata)] = buf[len(indata) :]
-    buf[(factor - 1) * len(indata) :] = (indata.reshape((len(indata))))[:]
+    buf[:(factor - 1) * len(indata)] = buf[len(indata):]
+    buf[(factor - 1) * len(indata):] = (indata.reshape((len(indata))))[:]
     lock.release()
 
 
@@ -105,15 +82,15 @@ def compute_pitch():
     global fresh_data
     avg_size = 2
     sq12_2 = 1.05946309
-    notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+    notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
     time.sleep(0.2)
     last_note = 0
     last_freq = 0
     same_count = 0
     window_function = np.zeros(1)
-    while True:
+    while (True):
         # Wait for fresh data in case it is not ready yet
-        while not fresh_data:
+        while (not fresh_data):
             time.sleep(0.001)
 
         # Acquire new data
@@ -176,7 +153,7 @@ def compute_pitch():
             # Remove noise and frequencies that are too low to be interesting
             if (np.average(fft) > args.noise_threshold) and last_freq > 40:
                 if args.repeat_count < 1 or same_count == args.repeat_count:
-                    print("Pitch: " + notes[note_ind] + " (" + str(last_freq) + " Hz)")
+                    print('Pitch: ' + notes[note_ind] + ' (' + str(last_freq) + ' Hz)')
 
 
 try:
@@ -185,14 +162,11 @@ try:
         parser.exit(0)
 
     stream = sd.InputStream(
-        device=args.device,
-        channels=1,
-        samplerate=args.samplerate,
-        callback=audio_callback,
-    )
+        device=args.device, channels=1,
+        samplerate=args.samplerate, callback=audio_callback)
 
     with stream:
         compute_pitch()
 
 except Exception as e:
-    parser.exit(type(e).__name__ + ": " + str(e))
+    parser.exit(type(e).__name__ + ': ' + str(e))

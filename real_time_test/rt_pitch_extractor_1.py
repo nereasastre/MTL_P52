@@ -17,9 +17,9 @@ all_notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
 
 def find_closest_note(pitch):
-    i = int(np.round(np.log2(pitch / concert_pitch) * 12))
+    i = int(np.round(np.log2(pitch/concert_pitch)*12))
     closest_note = all_notes[i % 12] + str(4 + (i + 9) // 12)
-    closest_pitch = concert_pitch * 2 ** (i / 12)
+    closest_pitch = concert_pitch*2**(i/12)
     return closest_note, closest_pitch
 
 
@@ -32,34 +32,28 @@ def callback(indata, frames, time, status):
     if status:
         print(status)
     if any(indata):
-        window_samples = np.concatenate(
-            (window_samples, indata[:, 0])
-        )  # append new samples
-        window_samples = window_samples[len(indata[:, 0]) :]  # remove old samples
-        magnitude_spec = abs(
-            scipy.fftpack.fft(window_samples)[: len(window_samples) // 2]
-        )
+        window_samples = np.concatenate((window_samples, indata[:, 0]))  # append new samples
+        window_samples = window_samples[len(indata[:, 0]):]  # remove old samples
+        magnitude_spec = abs(scipy.fftpack.fft(window_samples)[:len(window_samples)//2])
 
-        for i in range(int(62 / (fs / window_size))):
-            magnitude_spec[i] = 0  # suppress mains hum
+        for i in range(int(62/(fs/window_size))):
+            magnitude_spec[i] = 0        # suppress mains hum
 
         max_index = np.argmax(magnitude_spec)
-        max_freq = max_index * (fs / window_size)
+        max_freq = max_index * (fs/window_size)
         closest_note, closest_pitch = find_closest_note(max_freq)
 
-        os.system("cls" if os.name == "nt" else "clear")
+        os.system('cls' if os.name == 'nt' else 'clear')
         print(f"Closest note: {closest_note} {max_freq:.1f}/{closest_pitch:.1f}")
     else:
-        print("no input")
+        print('no input')
 
 
 # Start the microphone input stream
 
 
 try:
-    with sd.InputStream(
-        channels=1, callback=callback, blocksize=window_step, samplerate=fs
-    ):
+    with sd.InputStream(channels=1, callback=callback, blocksize=window_step, samplerate=fs):
         while True:
             pass
 except Exception as e:
