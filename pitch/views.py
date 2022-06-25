@@ -23,7 +23,7 @@ def index_view(request):
 
 def audio_store(request):
     print("request.FILES", request.FILES)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = AudioForm(request.POST, request.FILES or None)
         if form.is_valid():
             form.save()
@@ -32,11 +32,16 @@ def audio_store(request):
             audio_path = Audio_store.objects.first().record.path
             print(audio_path)
             sr, audio = wavfile.read(audio_path)
-            print("audio" , audio)
-            #USE THIS IN CASE STERIO
-            #audiodata = audio.astype(float)
-            #final_audio = audiodata.sum(axis=1) / 2
-            pitch_detected, closest_note, closest_pitch, pitch_diff = fft_pitch_detector(audio=audio)
+            print("audio", audio)
+            # USE THIS IN CASE STERIO
+            # audiodata = audio.astype(float)
+            # final_audio = audiodata.sum(axis=1) / 2
+            (
+                pitch_detected,
+                closest_note,
+                closest_pitch,
+                pitch_diff,
+            ) = fft_pitch_detector(audio=audio)
             print("audio pitches", pitch_detected)
             os.remove(audio_path)
             Audio_store.objects.all().delete()
