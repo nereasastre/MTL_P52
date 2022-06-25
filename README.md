@@ -48,7 +48,7 @@ pip3 install -r requirements.txt
 $ python manage.py runserver
 ```
 
-4. Open a new tab in your browser and go to `http://localhost:8000/admin`.
+4. Open a new tab in your browser and go to `http://localhost:8000/`.
 
 ### Tests
 
